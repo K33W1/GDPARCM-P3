@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameObject.cpp" />
+    <ClCompile Include="src\AssetManager.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
@@ -36,9 +38,12 @@
     <None Include="res\shaders\Basic.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\GameObject.h" />
+    <ClInclude Include="src\AssetManager.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\Singleton.h" />
     <ClInclude Include="src\vendor\imgui\imconfig.h" />
     <ClInclude Include="src\vendor\imgui\imgui.h" />
     <ClInclude Include="src\vendor\imgui\imgui_impl_glfw_gl3.h" />
