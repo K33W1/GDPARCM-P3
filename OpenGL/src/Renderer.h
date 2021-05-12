@@ -1,7 +1,4 @@
 #pragma once
-#include "IndexBuffer.h"
-#include "Shader.h"
-#include "VertexArray.h"
 #include <GL/glew.h>
 
 #define ASSERT(x) if (!(x)) __debugbreak();
@@ -12,13 +9,14 @@
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
 
+class GameObject;
+class Shader;
+
 class Renderer
 {
 public:
     Renderer();
 	
     void clear() const;
-    void draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader);
-
-private:
+    void draw(const GameObject& gameObject, Shader* const shader);
 };

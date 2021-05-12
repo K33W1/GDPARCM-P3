@@ -1,5 +1,6 @@
 #include "Texture.h"
-#include "stb_image/stb_image.h"
+#include <GL/glew.h>
+#include <stb_image/stb_image.h>
 
 Texture::Texture(const std::string& path)
 	: m_FilePath(path)

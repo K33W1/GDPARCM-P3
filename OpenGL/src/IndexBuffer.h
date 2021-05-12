@@ -9,7 +9,7 @@ public:
 	void bind() const;
 	void unbind() const;
 
-	inline unsigned int getCount() const { return m_Count; }
+	unsigned int getCount() const { return m_Count; }
 
 private:
 	unsigned int m_RendererID;

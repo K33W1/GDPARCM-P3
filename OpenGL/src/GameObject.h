@@ -1,27 +1,24 @@
 #pragma once
-#include "VertexArray.h"
-#include "IndexBuffer.h"
+#include "Mesh.h"
 #include "Shader.h"
 #include <glm/glm.hpp>
 
 class GameObject
 {
 public:
-	GameObject(const VertexArray& va, const IndexBuffer& ib, Shader& shader);
+	GameObject(const Mesh* const mesh, Shader* const shader);
 
 	void setPosition(const glm::vec3& newPosition);
 
-	const VertexArray& getVertexArray() const;
-	const IndexBuffer& getIndexBuffer() const;
-	Shader& getShader() const;
-
+	const Mesh* const getMesh() const;
+	Shader* const getShader() const;
+	
 	glm::mat4 getModelMatrix() const;
 	glm::vec3 getPosition() const;
 
 private:
-	const VertexArray& va;
-	const IndexBuffer& ib;
-	Shader& shader;
+	const Mesh* const mesh;
+	Shader* const shader;
 
 	glm::mat4 transform;
 };

@@ -1,8 +1,8 @@
 #include "GameObject.h"
 #include <glm/ext/matrix_transform.hpp>
 
-GameObject::GameObject(const VertexArray& va, const IndexBuffer& ib, Shader& shader)
-	: va(va), ib(ib), shader(shader)
+GameObject::GameObject(const Mesh* const mesh, Shader* const shader)
+	: mesh(mesh), shader(shader)
 {
 	this->transform = glm::mat4(1.0f);
 }
@@ -14,27 +14,22 @@ void GameObject::setPosition(const glm::vec3& newPosition)
 	this->transform[3].z = newPosition.z;
 }
 
-const VertexArray& GameObject::getVertexArray() const
+const Mesh* const GameObject::getMesh() const
 {
-	return this->va;
+	return mesh;
 }
 
-const IndexBuffer& GameObject::getIndexBuffer() const
+Shader* const GameObject::getShader() const
 {
-	return this->ib;
-}
-
-Shader& GameObject::getShader() const
-{
-	return this->shader;
+	return shader;
 }
 
 glm::mat4 GameObject::getModelMatrix() const
 {
-	return this->transform;
+	return transform;
 }
 
 glm::vec3 GameObject::getPosition() const
 {
-	return glm::vec3(this->transform[3]);
+	return glm::vec3(transform[3]);
 }

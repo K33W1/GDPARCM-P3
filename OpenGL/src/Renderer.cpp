@@ -1,4 +1,8 @@
 #include "Renderer.h"
+#include "GameObject.h"
+#include "VertexArray.h"
+#include "IndexBuffer.h"
+#include "Shader.h"
 #include <iostream>
 
 void GLClearError()
@@ -26,6 +30,7 @@ bool GLLogCall(const char* function, const char* file, int line)
 
 Renderer::Renderer()
 {
+	
 }
 
 void Renderer::clear() const
@@ -33,11 +38,15 @@ void Renderer::clear() const
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Renderer::draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader)
+void Renderer::draw(const GameObject& gameObject, Shader* const shader)
 {
-    shader.bind();
-    va.bind();
-    ib.bind();
+    const Mesh* const mesh = gameObject.getMesh();
+    const VertexArray* const va = mesh->getVertexArray();
+    const IndexBuffer* const ib = mesh->getIndexBuffer();
 	
-    glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, nullptr);
+    va->bind();
+    ib->bind();
+    shader->bind();
+	
+    glDrawElements(GL_TRIANGLES, ib->getCount(), GL_UNSIGNED_INT, nullptr);
 }
