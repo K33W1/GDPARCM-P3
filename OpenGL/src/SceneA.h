@@ -8,4 +8,3 @@ public:
 	
 	void load() override;
 };
-

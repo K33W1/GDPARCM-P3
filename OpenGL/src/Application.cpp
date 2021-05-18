@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Shader.h"
+#include "Camera.h"
 #include "GameObject.h"
 #include "AssetManager.h"
 #include "SceneManager.h"
@@ -17,6 +18,18 @@ GLFWwindow* window;
 Renderer renderer;
 const unsigned int WINDOW_WIDTH = 1280;
 const unsigned int WINDOW_HEIGHT = 720;
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+Camera camera;
+
+bool firstMouse = true;
+float lastX = WINDOW_WIDTH * 0.5f;
+float lastY = WINDOW_HEIGHT * 0.5f;
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 bool initialize()
 {
@@ -56,6 +69,9 @@ bool initialize()
     ImGui_ImplGlfwGL3_Init(window, true);
     ImGui::StyleColorsDark();
 
+    // glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetScrollCallback(window, scrollCallback);
+
 	return true;
 }
 
@@ -73,10 +89,7 @@ void loadStartingScene()
 
 void renderGameObjects()
 {
-	// Makeshift camera - Projection and view matrices can be wrapped around a class
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 1000.0f);
-    glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 viewProj = proj * view;
+    glm::mat4 viewProj = camera.getProjectionMatrix() * camera.getViewMatrix();
 
     for (const Scene* scene : SceneManager::getInstance().getLoadedScenes())
     {
@@ -109,21 +122,67 @@ void renderUI()
     teapot->setPosition(pos1);
 }
 
+void processInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
+}
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.processMouseMovement(xoffset, yoffset);
+}
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    camera.processMouseScroll(yoffset);
+}
+
+void update()
+{
+
+}
+
+void render()
+{
+	renderer.clear();
+	ImGui_ImplGlfwGL3_NewFrame();
+    	
+	renderGameObjects();
+	renderUI();
+
+	ImGui::Render();
+	ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+    	
+	glfwSwapBuffers(window);
+	glfwPollEvents();
+}
+
 void run()
 {
     while (!glfwWindowShouldClose(window))
     {
-        renderer.clear();
-        ImGui_ImplGlfwGL3_NewFrame();
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
     	
-        renderGameObjects();
-        renderUI();
-
-        ImGui::Render();
-        ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
-    	
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        processInput(window);
+        update();
+        render();
     }
 }
 
