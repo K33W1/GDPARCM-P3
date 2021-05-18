@@ -38,9 +38,9 @@ void Renderer::clear() const
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Renderer::draw(const GameObject& gameObject, Shader* const shader)
+void Renderer::draw(const GameObject* gameObject, Shader* const shader)
 {
-    const Mesh* const mesh = gameObject.getMesh();
+    const Mesh* const mesh = gameObject->getMesh();
     const VertexArray* const va = mesh->getVertexArray();
     const IndexBuffer* const ib = mesh->getIndexBuffer();
 	

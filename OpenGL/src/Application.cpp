@@ -1,12 +1,9 @@
 #include "Renderer.h"
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "VertexBufferLayout.h"
-#include "IndexBuffer.h"
-#include "Texture.h"
 #include "Shader.h"
 #include "GameObject.h"
 #include "AssetManager.h"
+#include "SceneManager.h"
+#include "Scene.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -20,8 +17,6 @@ GLFWwindow* window;
 Renderer renderer;
 const unsigned int WINDOW_WIDTH = 1280;
 const unsigned int WINDOW_HEIGHT = 720;
-
-std::vector<GameObject> gameObjects;
 
 bool initialize()
 {
@@ -64,9 +59,16 @@ bool initialize()
 	return true;
 }
 
-void loadAssets()
+void loadStartingAssets()
 {
-    return;
+    AssetManager::getInstance().initialize();
+}
+
+void loadStartingScene()
+{
+	SceneManager& sceneManager = SceneManager::getInstance();
+    sceneManager.initialize();
+    sceneManager.loadScene(0);
 }
 
 void renderGameObjects()
@@ -75,17 +77,20 @@ void renderGameObjects()
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 1000.0f);
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 viewProj = proj * view;
-	
-    for (const GameObject& gameObject : gameObjects)
+
+    for (const Scene* scene : SceneManager::getInstance().getLoadedScenes())
     {
-        Shader* shader = gameObject.getShader();
-    	
-        glm::mat4 mvp = viewProj * gameObject.getModelMatrix();
-    	
-        shader->bind();
-        shader->setUniformMat4f("u_MVP", mvp);
-    	
-        renderer.draw(gameObject, shader);
+        for (const GameObject* gameObject : scene->getGameObjects())
+        {
+            Shader* shader = gameObject->getShader();
+
+            glm::mat4 mvp = viewProj * gameObject->getModelMatrix();
+
+            shader->bind();
+            shader->setUniformMat4f("u_MVP", mvp);
+
+            renderer.draw(gameObject, shader);
+        }
     }
 }
 
@@ -94,23 +99,18 @@ void renderUI()
     // 1. Show a simple window.
     // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
     // TODO: There's "update" behaviour inside the render function which is weird
-    glm::vec3 pos1 = gameObjects[0].getPosition();
+	GameObject* const teapot = SceneManager::getInstance().getLoadedScenes()[0]->getGameObjects()[0];
+
+	glm::vec3 pos1 = teapot->getPosition();
 
     ImGui::SliderFloat3("Translation A", &pos1.x, -500.0f, 500.0f);
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
-    gameObjects[0].setPosition(pos1);
+    teapot->setPosition(pos1);
 }
 
 void run()
 {
-    AssetManager& assetManager = AssetManager::getInstance();
-	
-    assetManager.initialize();
-	
-    gameObjects.emplace_back(assetManager.getMesh("teapot"), assetManager.getShader("basic"));
-    gameObjects[0].setPosition({ 0.0f, 0.0f, -250.0f });
-
     while (!glfwWindowShouldClose(window))
     {
         renderer.clear();
@@ -139,7 +139,8 @@ int main()
 	if (!initialize())
         return -1;
 
-    loadAssets();
+    loadStartingAssets();
+    loadStartingScene();
     run();
     shutdown();
 }

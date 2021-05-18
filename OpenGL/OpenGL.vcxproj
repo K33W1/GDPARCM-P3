@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\SceneManager.cpp" />
+    <ClCompile Include="src\SceneA.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\AssetManager.cpp" />
@@ -40,6 +43,9 @@
     <None Include="res\shaders\Basic.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\SceneManager.h" />
+    <ClInclude Include="src\SceneA.h" />
+    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\AssetManager.h" />

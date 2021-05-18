@@ -18,5 +18,5 @@ public:
     Renderer();
 	
     void clear() const;
-    void draw(const GameObject& gameObject, Shader* const shader);
+    void draw(const GameObject* gameObject, Shader* const shader);
 };
