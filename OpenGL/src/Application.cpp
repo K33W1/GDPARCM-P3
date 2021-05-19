@@ -12,7 +12,6 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw_gl3.h>
 #include <iostream>
-#include <sstream>
 
 GLFWwindow* window;
 Renderer renderer;
@@ -84,14 +83,14 @@ void loadStartingScene()
 {
 	SceneManager& sceneManager = SceneManager::getInstance();
     sceneManager.initialize();
-    sceneManager.loadScene(0);
+    sceneManager.loadSceneAsync(0);
 }
 
 void renderGameObjects()
 {
     glm::mat4 viewProj = camera.getProjectionMatrix() * camera.getViewMatrix();
 
-    for (const Scene* scene : SceneManager::getInstance().getLoadedScenes())
+    for (const Scene* scene : SceneManager::getInstance().getActiveScenes())
     {
         for (const GameObject* gameObject : scene->getGameObjects())
         {
@@ -112,7 +111,7 @@ void renderUI()
     // 1. Show a simple window.
     // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
     // TODO: There's "update" behaviour inside the render function which is weird
-	GameObject* const teapot = SceneManager::getInstance().getLoadedScenes()[0]->getGameObjects()[0];
+	GameObject* const teapot = SceneManager::getInstance().getActiveScenes()[0]->getGameObjects()[0];
 
 	glm::vec3 pos1 = teapot->getPosition();
 
@@ -163,7 +162,7 @@ void render()
 	ImGui_ImplGlfwGL3_NewFrame();
     	
 	renderGameObjects();
-	renderUI();
+	//renderUI();
 
 	ImGui::Render();
 	ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
@@ -180,6 +179,7 @@ void run()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
     	
+        SceneManager::getInstance().startNewlyLoadedScenes();
         processInput(window);
         update();
         render();

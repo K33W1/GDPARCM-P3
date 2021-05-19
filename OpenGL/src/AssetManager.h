@@ -28,4 +28,3 @@ private:
 	std::unordered_map<std::string, const Texture* const> textures;
 	std::unordered_map<std::string, Shader* const> shaders;
 };
-
