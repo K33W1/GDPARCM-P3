@@ -4,16 +4,6 @@
 #include <algorithm>
 #include <thread>
 
-SceneManager::SceneManager()
-{
-	
-}
-
-SceneManager::~SceneManager()
-{
-	
-}
-
 void SceneManager::initialize()
 {
 	SceneA* sceneA = new SceneA();
@@ -32,21 +22,16 @@ void SceneManager::loadScene(int index)
 		return;
 	}
 	
-	newlyLoadedScenes.push_back(scene);
-	scene->load();
+	scene->loadAssets();
+	
+	newLoadedScenes.push_back(scene);
 }
 
 void SceneManager::loadSceneAsync(int index)
 {
-	std::thread* thread = new std::thread(&SceneManager::loadSceneAsyncImpl, this, index);
+	std::thread* thread = new std::thread(&SceneManager::loadScene, this, index);
 	loadingSceneThreads.push_back(thread);
 	thread->detach();
-}
-
-void SceneManager::loadSceneAsyncImpl(int index)
-{
-	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-	loadScene(index);
 }
 
 void SceneManager::unloadScene(int index)
@@ -62,20 +47,22 @@ void SceneManager::unloadScene(int index)
 
 	activeScenes.erase(sceneItr);
 	
-	scene->unload();
+	scene->unloadGameObjects();
+	scene->unloadAssets();
 }
 
-void SceneManager::startNewlyLoadedScenes()
+void SceneManager::instantiateNewLoadedScenes()
 {
-	for (int i = 0; i < newlyLoadedScenes.size(); i++)
+	for (Scene* scene : newLoadedScenes)
 	{
-		activeScenes.push_back(newlyLoadedScenes[i]);
+		scene->loadGameObjects();
+		activeScenes.push_back(scene);
 	}
 
-	newlyLoadedScenes.clear();
+	newLoadedScenes.clear();
 }
 
-const std::vector<const Scene*> SceneManager::getActiveScenes() const
+const std::vector<Scene*>& SceneManager::getActiveScenes()
 {
 	return activeScenes;
 }

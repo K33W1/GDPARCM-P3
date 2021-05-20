@@ -15,4 +15,3 @@ private:
 	const VertexArray* const va;
 	const IndexBuffer* const ib;
 };
-

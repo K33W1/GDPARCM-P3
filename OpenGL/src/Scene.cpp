@@ -1,22 +1,13 @@
 #include "Scene.h"
 #include "GameObject.h"
-
-Scene::Scene()
-{
-
-}
-
-Scene::~Scene()
-{
-	unload();
-}
+#include <iostream>
 
 void Scene::addGameObject(GameObject* gameObject)
 {
 	gameObjects.push_back(gameObject);
 }
 
-void Scene::unload()
+void Scene::unloadGameObjects()
 {
 	for (const GameObject* const gameObject : gameObjects)
 	{

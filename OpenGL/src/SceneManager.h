@@ -11,25 +11,22 @@ class SceneManager : public Singleton<SceneManager>
 	friend class Singleton<SceneManager>;
 
 public:
-	SceneManager();
-
 	void initialize();
 
-	void startNewlyLoadedScenes();
+	void instantiateNewLoadedScenes();
 
 	void loadScene(int index);
 	void loadSceneAsync(int index);
 	void unloadScene(int index);
 
-	const std::vector<const Scene*> getActiveScenes() const;
+	const std::vector<Scene*>& getActiveScenes();
 
 private:
-	~SceneManager() override;
+	SceneManager() = default;
+	~SceneManager() override = default;
 
-	void loadSceneAsyncImpl(int index);
-
-	std::vector<std::thread*> loadingSceneThreads;
-	ThreadSafeVector<const Scene*> newlyLoadedScenes;
-	std::vector<const Scene*> activeScenes;
+	ThreadSafeVector<std::thread*> loadingSceneThreads;
+	ThreadSafeVector<Scene*> newLoadedScenes;
+	std::vector<Scene*> activeScenes;
 	std::vector<Scene*> allScenes;
 };

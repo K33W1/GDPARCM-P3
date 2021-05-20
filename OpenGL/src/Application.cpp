@@ -27,8 +27,8 @@ bool firstMouse = true;
 float lastX = WINDOW_WIDTH * 0.5f;
 float lastY = WINDOW_HEIGHT * 0.5f;
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos);
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+void mouseCallback(GLFWwindow* window, double posX, double posY);
+void scrollCallback(GLFWwindow* window, double offsetX, double offsetY);
 
 bool initialize()
 {
@@ -90,12 +90,11 @@ void renderGameObjects()
 {
     glm::mat4 viewProj = camera.getProjectionMatrix() * camera.getViewMatrix();
 
-    for (const Scene* scene : SceneManager::getInstance().getActiveScenes())
+    for (Scene* scene : SceneManager::getInstance().getActiveScenes())
     {
-        for (const GameObject* gameObject : scene->getGameObjects())
+        for (GameObject* gameObject : scene->getGameObjects())
         {
             Shader* shader = gameObject->getShader();
-
             glm::mat4 mvp = viewProj * gameObject->getModelMatrix();
 
             shader->bind();
@@ -111,14 +110,23 @@ void renderUI()
     // 1. Show a simple window.
     // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
     // TODO: There's "update" behaviour inside the render function which is weird
-	GameObject* const teapot = SceneManager::getInstance().getActiveScenes()[0]->getGameObjects()[0];
+    if (SceneManager::getInstance().getActiveScenes().size() == 0)
+        return;
 
-	glm::vec3 pos1 = teapot->getPosition();
+    Scene* const scene = SceneManager::getInstance().getActiveScenes()[0];
 
-    ImGui::SliderFloat3("Translation A", &pos1.x, -500.0f, 500.0f);
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	for (int i = 0; i < scene->getGameObjects().size(); i++)
+	{
+        GameObject* gameobject = scene->getGameObjects()[i];
+        glm::vec3 pos = gameobject->getPosition();
 
-    teapot->setPosition(pos1);
+        std::string sliderName = "Translation " + std::to_string(i);
+		
+        ImGui::SliderFloat3(sliderName.c_str(), &pos.x, -500.0f, 500.0f);
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+        gameobject->setPosition(pos);
+	}
 }
 
 void processInput(GLFWwindow* window)
@@ -129,26 +137,29 @@ void processInput(GLFWwindow* window)
     }
 }
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+void mouseCallback(GLFWwindow* window, double dPosX, double dPosY)
 {
+    float posX = (float)dPosX;
+    float posY = (float)dPosY;
+	
     if (firstMouse)
     {
-        lastX = xpos;
-        lastY = ypos;
+        lastX = posX;
+        lastY = posY;
         firstMouse = false;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos;
-    lastX = xpos;
-    lastY = ypos;
+    float xoffset = posX - lastX;
+    float yoffset = lastY - posY;
+    lastX = posX;
+    lastY = posY;
 
     camera.processMouseMovement(xoffset, yoffset);
 }
 
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+void scrollCallback(GLFWwindow* window, double offsetX, double offsetY)
 {
-    camera.processMouseScroll(yoffset);
+    camera.processMouseScroll((float)offsetY);
 }
 
 void update()
@@ -162,7 +173,7 @@ void render()
 	ImGui_ImplGlfwGL3_NewFrame();
     	
 	renderGameObjects();
-	//renderUI();
+	renderUI();
 
 	ImGui::Render();
 	ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
@@ -175,11 +186,13 @@ void run()
 {
     while (!glfwWindowShouldClose(window))
     {
-        float currentFrame = glfwGetTime();
+        float currentFrame = (float)glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
     	
-        SceneManager::getInstance().startNewlyLoadedScenes();
+        AssetManager::getInstance().instantiateNewLoadedAssets();
+        SceneManager::getInstance().instantiateNewLoadedScenes();
+    	
         processInput(window);
         update();
         render();

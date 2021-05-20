@@ -6,5 +6,7 @@ class SceneA : public Scene
 public:
 	SceneA();
 	
-	void load() override;
+	void loadAssets() override;
+	void loadGameObjects() override;
+	void unloadAssets() override;
 };

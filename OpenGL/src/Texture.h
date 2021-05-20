@@ -22,4 +22,3 @@ private:
 	int m_Height;
 	int m_BPP;
 };
-

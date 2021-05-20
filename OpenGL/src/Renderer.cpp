@@ -47,6 +47,6 @@ void Renderer::draw(const GameObject* gameObject, Shader* const shader)
     va->bind();
     ib->bind();
     shader->bind();
-	
+
     glDrawElements(GL_TRIANGLES, ib->getCount(), GL_UNSIGNED_INT, nullptr);
 }

@@ -6,11 +6,14 @@ class GameObject;
 class Scene
 {
 public:
-	Scene();
-	virtual ~Scene();
+	Scene() = default;
+	virtual ~Scene() = default;
 
-	virtual void load() = 0;
-	void unload();
+	virtual void loadAssets() = 0;
+	virtual void loadGameObjects() = 0;
+	
+	void unloadGameObjects();
+	virtual void unloadAssets() = 0;
 	
 	const std::vector<GameObject*> getGameObjects() const;
 

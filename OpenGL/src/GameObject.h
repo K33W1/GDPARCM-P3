@@ -9,6 +9,7 @@ public:
 	GameObject(const Mesh* const mesh, Shader* const shader);
 
 	void setPosition(const glm::vec3& newPosition);
+	void setScale(const glm::vec3& newScale);
 
 	const Mesh* const getMesh() const;
 	Shader* const getShader() const;
@@ -20,6 +21,8 @@ private:
 	const Mesh* const mesh;
 	Shader* const shader;
 
-	glm::mat4 transform;
+	glm::vec3 position;
+	glm::vec3 rotation;
+	glm::vec3 scale;
 };
 
