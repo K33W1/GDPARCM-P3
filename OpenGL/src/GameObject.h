@@ -1,25 +1,26 @@
 #pragma once
-#include "Mesh.h"
-#include "Shader.h"
 #include <glm/glm.hpp>
+
+class Mesh;
+class Material;
 
 class GameObject
 {
 public:
-	GameObject(const Mesh* const mesh, Shader* const shader);
+	GameObject(Mesh* mesh, Material* material);
 
 	void setPosition(const glm::vec3& newPosition);
 	void setScale(const glm::vec3& newScale);
 
-	const Mesh* const getMesh() const;
-	Shader* const getShader() const;
+	Mesh* getMesh() const;
+	Material* getMaterial() const;
 	
 	glm::mat4 getModelMatrix() const;
 	glm::vec3 getPosition() const;
 
 private:
-	const Mesh* const mesh;
-	Shader* const shader;
+	Mesh* const mesh;
+	Material* const material;
 
 	glm::vec3 position;
 	glm::vec3 rotation;

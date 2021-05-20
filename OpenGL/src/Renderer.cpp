@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
+#include "Mesh.h"
 #include "Shader.h"
 #include <iostream>
 

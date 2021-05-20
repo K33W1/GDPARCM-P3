@@ -7,6 +7,7 @@
 #include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
 #include "Shader.h"
+#include "Material.h"
 #include <tinyobjloader/tiny_obj_loader.h>
 #include <iostream>
 #include <thread>
@@ -15,19 +16,14 @@ void AssetManager::initialize()
 {
 	loadPrimitiveMeshes();
 
-	loadShaderFile("res/shaders/basic.shader");
+	loadShaderFile("res/shaders/textured.shader");
 	loadTextureFile("res/textures/pepe_kid_sad.png");
+	loadTextureFile("res/textures/Bulbasaur.png");
 	
-	Shader* shader = getShader("basic");
-	Texture* texture = getTexture("pepe_kid_sad");
+	Shader* shader = getShader("textured");
+	Texture* bulbasaurTexture = getTexture("Bulbasaur");
 
-	// TODO: Materials
-	
-	shader->bind();
-	texture->bind();
-	shader->setUniform1i("u_Texture", 0);
-	shader->unbind();
-	texture->bind();
+	createMaterial("bulbasaur", shader, bulbasaurTexture, glm::vec4(1.0f));
 }
 
 void AssetManager::loadMeshFile(const std::string& filepath)
@@ -55,22 +51,37 @@ void AssetManager::loadMeshFile(const std::string& filepath)
 	// Loop over shapes
 	for (const tinyobj::shape_t& shape : shapes)
 	{
-		// Vertex Data
+		size_t index_offset = 0;
 		std::vector<float> vertexData;
-		for (int i = 0; i < attrib.vertices.size() / 3; i++)
-		{
-			vertexData.push_back(attrib.vertices[i * 3 + 0]);
-			vertexData.push_back(attrib.vertices[i * 3 + 1]);
-			vertexData.push_back(attrib.vertices[i * 3 + 2]);
-			vertexData.push_back(attrib.texcoords[i * 2 + 0]);
-			vertexData.push_back(attrib.texcoords[i * 2 + 1]);
-		}
-
-		// Indices
 		std::vector<unsigned int> indices;
-		for (int i = 0; i < shape.mesh.indices.size(); i++)
+
+		// Vertex Data
+		for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++)
 		{
-			indices.push_back(shape.mesh.indices[i].vertex_index);
+			int fv = shape.mesh.num_face_vertices[f];
+
+			// Loop over vertices in the face.
+			for (size_t v = 0; v < fv; v++)
+			{
+				// access to vertex
+				tinyobj::index_t idx = shape.mesh.indices[index_offset + v];
+				indices.push_back(index_offset + v);
+				vertexData.push_back(attrib.vertices[3 * idx.vertex_index + 0]);
+				vertexData.push_back(attrib.vertices[3 * idx.vertex_index + 1]);
+				vertexData.push_back(attrib.vertices[3 * idx.vertex_index + 2]);
+				vertexData.push_back(attrib.texcoords[2 * idx.texcoord_index + 0]);
+				vertexData.push_back(attrib.texcoords[2 * idx.texcoord_index + 1]);
+				// Optional: normals
+				// tinyobj::real_t nx = attrib.normals[3 * idx.normal_index + 0];
+				// tinyobj::real_t ny = attrib.normals[3 * idx.normal_index + 1];
+				// tinyobj::real_t nz = attrib.normals[3 * idx.normal_index + 2];
+				// Optional: vertex colors
+				// tinyobj::real_t r = attrib.colors[3*idx.vertex_index+0];
+				// tinyobj::real_t g = attrib.colors[3*idx.vertex_index+1];
+				// tinyobj::real_t b = attrib.colors[3*idx.vertex_index+2];
+			}
+			
+			index_offset += fv;
 		}
 
 		meshesToInstantiate.push_back({ filepath, vertexData, indices });
@@ -84,22 +95,12 @@ void AssetManager::loadMeshFileAsync(const std::string& filepath)
 	
 }
 
-void AssetManager::loadMeshFileAsyncImpl(const std::string& filepath)
-{
-	
-}
-
 void AssetManager::loadTextureFile(const std::string& filepath)
 {
 	textures.emplace(getFileName(filepath), new Texture(filepath));
 }
 
 void AssetManager::loadTextureFileAsync(const std::string& filepath)
-{
-	
-}
-
-void AssetManager::loadTextureFileAsyncImpl(const std::string& filepath)
 {
 	
 }
@@ -123,7 +124,6 @@ void AssetManager::instantiateNewLoadedAssets()
 		VertexBufferLayout* layout = new VertexBufferLayout();
 		layout->push<float>(3);
 		layout->push<float>(2);
-		va->bind();
 		va->setBuffer(vb, layout);
 
 		meshes.emplace(fileName, new Mesh(va, ib));
@@ -159,12 +159,13 @@ void AssetManager::loadPrimitiveMeshes()
 	va->setBuffer(vb, layout);
 
 	Mesh* quad = new Mesh(va, ib);
-
-	va->unbind();
-	vb->unbind();
-	ib->unbind();
-
+	
 	meshes.emplace("quad", quad);
+}
+
+void AssetManager::createMaterial(const std::string& name, Shader* shader, Texture* texture, const glm::vec4& color)
+{
+	materials.emplace(name, new Material(shader, texture, color));
 }
 
 std::string AssetManager::getFileName(const std::string& name)
@@ -199,6 +200,11 @@ Shader* const AssetManager::getShader(const std::string& name)
 	return shaders.at(name);
 }
 
+Material* const AssetManager::getMaterial(const std::string& name)
+{
+	return materials.at(name);
+}
+
 AssetManager::~AssetManager()
 {
 	for (const auto& nameMeshPair : meshes)
@@ -214,5 +220,10 @@ AssetManager::~AssetManager()
 	for (const auto& nameShaderPair : shaders)
 	{
 		delete nameShaderPair.second;
+	}
+	
+	for (const auto& nameMaterialPair : materials)
+	{
+		delete nameMaterialPair.second;
 	}
 }

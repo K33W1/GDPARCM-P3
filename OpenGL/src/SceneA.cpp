@@ -21,15 +21,15 @@ void SceneA::loadGameObjects()
 {
 	// Get assets
 	AssetManager& assetManager = AssetManager::getInstance();
-	Mesh* teapotMesh = assetManager.getMesh("teapot");
+	Mesh* quadMesh = assetManager.getMesh("quad");
 	Mesh* bulbasaurMesh = assetManager.getMesh("bulbasaur");
-	Shader* basicShader = assetManager.getShader("basic");
+	Material* bulbasaurMaterial = assetManager.getMaterial("bulbasaur");
 
 	// Instantiate gameobjects
-	GameObject* teapot = new GameObject(teapotMesh, basicShader);
-	teapot->setPosition({ 0.0f, 0.0f, -500.0f });
-	addGameObject(teapot);
-	GameObject* bulbasaur = new GameObject(bulbasaurMesh, basicShader);
+	GameObject* quad = new GameObject(quadMesh, bulbasaurMaterial);
+	quad->setPosition({ 0.0f, 0.0f, -500.0f });
+	addGameObject(quad);
+	GameObject* bulbasaur = new GameObject(bulbasaurMesh, bulbasaurMaterial);
 	bulbasaur->setPosition({ 0.0f, 0.0f, -100.0f });
 	bulbasaur->setScale({ 5.0f, 5.0f, 5.0f });
 	addGameObject(bulbasaur);

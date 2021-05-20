@@ -13,6 +13,8 @@
 #include <imgui/imgui_impl_glfw_gl3.h>
 #include <iostream>
 
+#include "Material.h"
+
 GLFWwindow* window;
 Renderer renderer;
 const unsigned int WINDOW_WIDTH = 1280;
@@ -94,13 +96,13 @@ void renderGameObjects()
     {
         for (GameObject* gameObject : scene->getGameObjects())
         {
-            Shader* shader = gameObject->getShader();
+            Material* const material = gameObject->getMaterial();
             glm::mat4 mvp = viewProj * gameObject->getModelMatrix();
 
-            shader->bind();
-            shader->setUniformMat4f("u_MVP", mvp);
-
-            renderer.draw(gameObject, shader);
+            material->bind();
+            material->setShaderMVP(mvp);
+            
+            renderer.draw(gameObject, material->getShader());
         }
     }
 }
@@ -122,7 +124,7 @@ void renderUI()
 
         std::string sliderName = "Translation " + std::to_string(i);
 		
-        ImGui::SliderFloat3(sliderName.c_str(), &pos.x, -500.0f, 500.0f);
+        ImGui::SliderFloat3(sliderName.c_str(), &pos.x, -200.0f, 200.0f);
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
         gameobject->setPosition(pos);

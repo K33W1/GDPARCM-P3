@@ -1,8 +1,10 @@
 #include "GameObject.h"
+#include "Mesh.h"
+#include "Material.h"
 #include <glm/ext/matrix_transform.hpp>
 
-GameObject::GameObject(const Mesh* const mesh, Shader* const shader)
-	: mesh(mesh), shader(shader), position(0.0f), scale(1.0f)
+GameObject::GameObject(Mesh* mesh, Material* material)
+	: mesh(mesh), material(material), position(0.0f), scale(1.0f)
 {
 
 }
@@ -17,14 +19,14 @@ void GameObject::setScale(const glm::vec3& newScale)
 	scale = newScale;
 }
 
-const Mesh* const GameObject::getMesh() const
+Mesh* GameObject::getMesh() const
 {
 	return mesh;
 }
 
-Shader* const GameObject::getShader() const
+Material* GameObject::getMaterial() const
 {
-	return shader;
+	return material;
 }
 
 glm::mat4 GameObject::getModelMatrix() const
