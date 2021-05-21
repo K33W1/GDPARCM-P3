@@ -19,21 +19,21 @@ void AssetManager::initialize()
 	loadShaderFile("res/shaders/textured.shader");
 	loadTextureFile("res/textures/pepe_kid_sad.png");
 	loadTextureFile("res/textures/Bulbasaur.png");
+	loadTextureFile("res/textures/controller_red.png");
 	
 	Shader* shader = getShader("textured");
 	Texture* bulbasaurTexture = getTexture("Bulbasaur");
 
-	createMaterial("bulbasaur", shader, bulbasaurTexture, glm::vec4(1.0f));
+	createMaterial("Bulbasaur", shader, bulbasaurTexture, glm::vec4(1.0f));
 }
 
 void AssetManager::loadMeshFile(const std::string& filepath)
 {
-	tinyobj::attrib_t attrib;
-	std::vector<tinyobj::shape_t> shapes;
-	std::vector<tinyobj::material_t> materials;
 	std::string err;
-
-	bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filepath.c_str());
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> tinyMaterials;
+	
+	bool ret = tinyobj::LoadObj(shapes, tinyMaterials, err, filepath.c_str(), filepath.c_str());
 
 	if (!err.empty())
 	{
@@ -51,40 +51,20 @@ void AssetManager::loadMeshFile(const std::string& filepath)
 	// Loop over shapes
 	for (const tinyobj::shape_t& shape : shapes)
 	{
-		size_t index_offset = 0;
+		const tinyobj::mesh_t& mesh = shape.mesh;
 		std::vector<float> vertexData;
-		std::vector<unsigned int> indices;
 
-		// Vertex Data
-		for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++)
+		// Extract data
+		for (size_t i = 0; i < mesh.positions.size() / 3; i++)
 		{
-			int fv = shape.mesh.num_face_vertices[f];
-
-			// Loop over vertices in the face.
-			for (size_t v = 0; v < fv; v++)
-			{
-				// access to vertex
-				tinyobj::index_t idx = shape.mesh.indices[index_offset + v];
-				indices.push_back(index_offset + v);
-				vertexData.push_back(attrib.vertices[3 * idx.vertex_index + 0]);
-				vertexData.push_back(attrib.vertices[3 * idx.vertex_index + 1]);
-				vertexData.push_back(attrib.vertices[3 * idx.vertex_index + 2]);
-				vertexData.push_back(attrib.texcoords[2 * idx.texcoord_index + 0]);
-				vertexData.push_back(attrib.texcoords[2 * idx.texcoord_index + 1]);
-				// Optional: normals
-				// tinyobj::real_t nx = attrib.normals[3 * idx.normal_index + 0];
-				// tinyobj::real_t ny = attrib.normals[3 * idx.normal_index + 1];
-				// tinyobj::real_t nz = attrib.normals[3 * idx.normal_index + 2];
-				// Optional: vertex colors
-				// tinyobj::real_t r = attrib.colors[3*idx.vertex_index+0];
-				// tinyobj::real_t g = attrib.colors[3*idx.vertex_index+1];
-				// tinyobj::real_t b = attrib.colors[3*idx.vertex_index+2];
-			}
-			
-			index_offset += fv;
+			vertexData.push_back(mesh.positions[3 * i + 0]);
+			vertexData.push_back(mesh.positions[3 * i + 1]);
+			vertexData.push_back(mesh.positions[3 * i + 2]);
+			vertexData.push_back(mesh.texcoords[2 * i + 0]);
+			vertexData.push_back(mesh.texcoords[2 * i + 1]);
 		}
 
-		meshesToInstantiate.push_back({ filepath, vertexData, indices });
+		meshesToInstantiate.push_back({ filepath, vertexData, mesh.indices });
 
 		break; // Load only the first submesh
 	}

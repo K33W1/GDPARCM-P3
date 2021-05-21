@@ -65,6 +65,8 @@ bool initialize()
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
     ImGui::CreateContext();
     ImGui_ImplGlfwGL3_Init(window, true);
@@ -166,7 +168,15 @@ void scrollCallback(GLFWwindow* window, double offsetX, double offsetY)
 
 void update()
 {
-
+    for (Scene* scene : SceneManager::getInstance().getActiveScenes())
+    {
+        for (GameObject* gameObject : scene->getGameObjects())
+        {
+            glm::vec3 rot = gameObject->getRotation();
+            rot.y += 100.0f * deltaTime;
+            gameObject->setRotation(rot);
+        }
+    }
 }
 
 void render()
