@@ -1,14 +1,14 @@
 #include "SceneManager.h"
 #include "SceneA.h"
+#include "SceneB.h"
 #include <iostream>
 #include <algorithm>
 #include <thread>
 
 void SceneManager::initialize()
 {
-	SceneA* sceneA = new SceneA();
-	
-	allScenes.push_back(sceneA);
+	allScenes.push_back(new SceneA());
+	allScenes.push_back(new SceneB());
 }
 
 void SceneManager::loadScene(int index)

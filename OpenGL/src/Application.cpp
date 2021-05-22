@@ -87,7 +87,8 @@ void loadStartingScene()
 {
 	SceneManager& sceneManager = SceneManager::getInstance();
     sceneManager.initialize();
-    sceneManager.loadSceneAsync(0);
+    //sceneManager.loadSceneAsync(0);
+    sceneManager.loadSceneAsync(1);
 }
 
 void renderGameObjects()
@@ -117,20 +118,23 @@ void renderUI()
     if (SceneManager::getInstance().getActiveScenes().size() == 0)
         return;
 
-    Scene* const scene = SceneManager::getInstance().getActiveScenes()[0];
+    for (int i = 0; i < SceneManager::getInstance().getActiveScenes().size(); i++)
+    {
+        Scene* const scene = SceneManager::getInstance().getActiveScenes()[i];
 
-	for (int i = 0; i < scene->getGameObjects().size(); i++)
-	{
-        GameObject* gameobject = scene->getGameObjects()[i];
-        glm::vec3 pos = gameobject->getPosition();
+        for (int j = 0; j < scene->getGameObjects().size(); j++)
+        {
+            GameObject* gameobject = scene->getGameObjects()[j];
+            glm::vec3 pos = gameobject->getPosition();
 
-        std::string sliderName = "Translation " + std::to_string(i);
-		
-        ImGui::SliderFloat3(sliderName.c_str(), &pos.x, -200.0f, 200.0f);
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            std::string sliderName = "Translation_" + std::to_string(i) + "_" + std::to_string(j);
 
-        gameobject->setPosition(pos);
-	}
+            ImGui::SliderFloat3(sliderName.c_str(), &pos.x, -200.0f, 200.0f);
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+            gameobject->setPosition(pos);
+        }
+    }
 }
 
 void processInput(GLFWwindow* window)

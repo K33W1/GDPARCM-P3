@@ -15,16 +15,28 @@
 void AssetManager::initialize()
 {
 	loadPrimitiveMeshes();
-
 	loadShaderFile("res/shaders/textured.shader");
 	loadTextureFile("res/textures/pepe_kid_sad.png");
 	loadTextureFile("res/textures/Bulbasaur.png");
 	loadTextureFile("res/textures/controller_red.png");
+	loadTextureFile("res/textures/azul_principal.jpg");
+	loadTextureFile("res/textures/apple_texture.png");
+	loadTextureFile("res/textures/coca_cola.png");
+	loadTextureFile("res/textures/ham.png");
 	
 	Shader* shader = getShader("textured");
-	Texture* bulbasaurTexture = getTexture("Bulbasaur");
 
+	// Instantiate materials
+	Texture* bulbasaurTexture = getTexture("Bulbasaur");
 	createMaterial("Bulbasaur", shader, bulbasaurTexture, glm::vec4(1.0f));
+	Texture* krissVectorTexture = getTexture("azul_principal");
+	createMaterial("kriss_vector", shader, krissVectorTexture, glm::vec4(1.0f));
+	Texture* appleTexture = getTexture("apple_texture");
+	createMaterial("apple", shader, appleTexture, glm::vec4(1.0f));
+	Texture* cocaColaTexture = getTexture("coca_cola");
+	createMaterial("coca_cola", shader, cocaColaTexture, glm::vec4(1.0f));
+	Texture* hamTexture = getTexture("ham");
+	createMaterial("ham", shader, hamTexture, glm::vec4(1.0f));
 }
 
 void AssetManager::loadMeshFile(const std::string& filepath)
