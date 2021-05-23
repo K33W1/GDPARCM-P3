@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <string>
+#include <chrono>
 
 class GameObject;
 
@@ -19,6 +21,8 @@ public:
 
 protected:
 	void addGameObject(GameObject* gameObject);
+
+	std::vector<std::string> assets;
 
 private:
 	std::vector<GameObject*> gameObjects;

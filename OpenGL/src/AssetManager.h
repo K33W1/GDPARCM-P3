@@ -3,6 +3,7 @@
 #include "ThreadSafeVector.h"
 #include "ThreadSafeUnorderedMap.h"
 #include "MeshData.h"
+#include "TextureData.h"
 #include <glm/glm.hpp>
 #include <string>
 #include <unordered_map>
@@ -19,14 +20,17 @@ class AssetManager : public Singleton<AssetManager>
 public:
 	void initialize();
 
-	void loadMeshFile(const std::string& filepath);
+	void loadMeshFile(const std::string& filename);
 	void loadMeshFileAsync(const std::string& filepath);
 	void loadTextureFile(const std::string& filepath);
 	void loadTextureFileAsync(const std::string& filepath);
 	void loadShaderFile(const std::string& filepath);
 
-	void instantiateNewLoadedAssets();
+	void createMaterial(const std::string& name, Shader* shader, Texture* texture, const glm::vec4& color);
 
+	void instantiateNewLoadedAssets();
+	void generateNewLoadedTextures();
+	
 	bool isMeshLoaded(const std::string& name);
 	bool isTextureLoaded(const std::string& name);
 
@@ -39,13 +43,16 @@ private:
 	~AssetManager() override;
 
 	void loadPrimitiveMeshes();
-	void createMaterial(const std::string& name, Shader* shader, Texture* texture, const glm::vec4& color);
 
 	std::string getFileName(const std::string& name);
 
 	ThreadSafeVector<MeshData> meshesToInstantiate;
+	ThreadSafeVector<TextureData> texturesToGenerate;
 	ThreadSafeUnorderedMap<std::string, Mesh* const> meshes;
 	ThreadSafeUnorderedMap<std::string, Texture* const> textures;
 	ThreadSafeUnorderedMap<std::string, Shader* const> shaders;
 	ThreadSafeUnorderedMap<std::string, Material* const> materials;
+
+	const std::string MESH_PATH = "res/meshes/";
+	const std::string TEXTURE_PATH = "res/textures/";
 };

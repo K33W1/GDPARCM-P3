@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "MeshData.h"
 #include "Texture.h"
+#include "TextureData.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
@@ -9,6 +10,7 @@
 #include "Shader.h"
 #include "Material.h"
 #include <tinyobjloader/tiny_obj_loader.h>
+#include <stb_image/stb_image.h>
 #include <iostream>
 #include <thread>
 
@@ -16,11 +18,11 @@ void AssetManager::initialize()
 {
 	loadPrimitiveMeshes();
 	loadShaderFile("res/shaders/textured.shader");
-	loadTextureFile("res/textures/pepe_kid_sad.png");
-	loadTextureFile("res/textures/Bulbasaur.png");
-	loadTextureFile("res/textures/controller_red.png");
-	loadTextureFile("res/textures/azul_principal.jpg");
-	loadTextureFile("res/textures/apple_texture.png");
+	//loadTextureFile("res/textures/pepe_kid_sad.png");
+	//loadTextureFile("bulbasaur");
+	//loadTextureFile("res/textures/controller_red.png");
+	//loadTextureFile("kriss_vector");
+	/*loadTextureFile("res/textures/apple.png");
 	loadTextureFile("res/textures/coca_cola.png");
 	loadTextureFile("res/textures/ham.png");
 	loadTextureFile("res/textures/coin.png");
@@ -28,40 +30,42 @@ void AssetManager::initialize()
 	loadTextureFile("res/textures/star.png");
 	loadTextureFile("res/textures/bow.png");
 	loadTextureFile("res/textures/superHammer.png");
-	loadTextureFile("res/textures/ancientPick.png");
-	
-	Shader* shader = getShader("textured");
+	loadTextureFile("res/textures/ancientPick.png");*/
 
-	// Instantiate materials
-	Texture* bulbasaurTexture = getTexture("Bulbasaur");
-	createMaterial("Bulbasaur", shader, bulbasaurTexture, glm::vec4(1.0f));
-	Texture* krissVectorTexture = getTexture("azul_principal");
-	createMaterial("kriss_vector", shader, krissVectorTexture, glm::vec4(1.0f));
-	Texture* appleTexture = getTexture("apple_texture");
-	createMaterial("apple", shader, appleTexture, glm::vec4(1.0f));
-	Texture* cocaColaTexture = getTexture("coca_cola");
-	createMaterial("coca_cola", shader, cocaColaTexture, glm::vec4(1.0f));
-	Texture* hamTexture = getTexture("ham");
-	createMaterial("ham", shader, hamTexture, glm::vec4(1.0f));
-	Texture* coinTexture = getTexture("coin");
-	createMaterial("coin", shader, coinTexture, glm::vec4(1.0f));
-	Texture* blueShellTexture = getTexture("blueShell");
-	createMaterial("blueShell", shader, blueShellTexture, glm::vec4(1.0f));
-	Texture* starTexture = getTexture("star");
-	createMaterial("star", shader, starTexture, glm::vec4(1.0f));
-	Texture* bowTexture = getTexture("bow");
-	createMaterial("bow", shader, bowTexture, glm::vec4(1.0f));
-	Texture* superHammerTexture = getTexture("superHammer");
-	createMaterial("superHammer", shader, superHammerTexture, glm::vec4(1.0f));
-	Texture* ancientPickTexture = getTexture("ancientPick");
-	createMaterial("ancientPick", shader, ancientPickTexture, glm::vec4(1.0f));
+	//Shader* shader = getShader("textured");
+
+	//// Instantiate materials
+	//Texture* bulbasaurTexture = getTexture("bulbasaur");
+	//createMaterial("bulbasaur", shader, bulbasaurTexture, glm::vec4(1.0f));
+	//Texture* krissVectorTexture = getTexture("kriss_vector");
+	//createMaterial("kriss_vector", shader, krissVectorTexture, glm::vec4(1.0f));
+	//Texture* appleTexture = getTexture("apple");
+	//createMaterial("apple", shader, appleTexture, glm::vec4(1.0f));
+	//Texture* cocaColaTexture = getTexture("coca_cola");
+	//createMaterial("coca_cola", shader, cocaColaTexture, glm::vec4(1.0f));
+	//Texture* hamTexture = getTexture("ham");
+	//createMaterial("ham", shader, hamTexture, glm::vec4(1.0f));
+	//Texture* coinTexture = getTexture("coin");
+	//createMaterial("coin", shader, coinTexture, glm::vec4(1.0f));
+	//Texture* blueShellTexture = getTexture("blueShell");
+	//createMaterial("blueShell", shader, blueShellTexture, glm::vec4(1.0f));
+	//Texture* starTexture = getTexture("star");
+	//createMaterial("star", shader, starTexture, glm::vec4(1.0f));
+	//Texture* bowTexture = getTexture("bow");
+	//createMaterial("bow", shader, bowTexture, glm::vec4(1.0f));
+	//Texture* superHammerTexture = getTexture("superHammer");
+	//createMaterial("superHammer", shader, superHammerTexture, glm::vec4(1.0f));
+	//Texture* ancientPickTexture = getTexture("ancientPick");
+	//createMaterial("ancientPick", shader, ancientPickTexture, glm::vec4(1.0f));
 }
 
-void AssetManager::loadMeshFile(const std::string& filepath)
+void AssetManager::loadMeshFile(const std::string& filename)
 {
 	std::string err;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> tinyMaterials;
+
+	std::string filepath = MESH_PATH + filename + ".obj";
 	
 	bool ret = tinyobj::LoadObj(shapes, tinyMaterials, err, filepath.c_str(), filepath.c_str());
 
@@ -105,9 +109,16 @@ void AssetManager::loadMeshFileAsync(const std::string& filepath)
 	
 }
 
-void AssetManager::loadTextureFile(const std::string& filepath)
+void AssetManager::loadTextureFile(const std::string& filename)
 {
-	textures.emplace(getFileName(filepath), new Texture(filepath));
+	std::string filepath = TEXTURE_PATH + filename + ".png";
+
+	int width, height, BPP;
+	unsigned char* buffer = stbi_load(filepath.c_str(), &width, &height, &BPP, 4);
+
+	texturesToGenerate.push_back({ filepath, width, height, BPP, buffer });
+
+	//textures.emplace(filename, new Texture(filepath));
 }
 
 void AssetManager::loadTextureFileAsync(const std::string& filepath)
@@ -142,6 +153,22 @@ void AssetManager::instantiateNewLoadedAssets()
 	}
 
 	meshesToInstantiate.clear();
+}
+
+void AssetManager::generateNewLoadedTextures()
+{
+	for (TextureData& textureData : texturesToGenerate)
+	{
+		std::string filepath = textureData.getFilePath();
+		int width = textureData.getWidth();
+		int height = textureData.getHeight();
+		int BPP = textureData.getBPP();
+		unsigned char* buffer = textureData.getBuffer();
+
+		textures.emplace(getFileName(filepath), new Texture(filepath, width, height, BPP, buffer));
+	}
+
+	texturesToGenerate.clear();
 }
 
 void AssetManager::loadPrimitiveMeshes()

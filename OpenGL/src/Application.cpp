@@ -87,10 +87,10 @@ void loadStartingScene()
 {
 	SceneManager& sceneManager = SceneManager::getInstance();
     sceneManager.initialize();
-    //sceneManager.loadSceneAsync(0);
-    //sceneManager.loadSceneAsync(1);
+    sceneManager.loadSceneAsync(0);
+    sceneManager.loadSceneAsync(1);
     sceneManager.loadSceneAsync(2);
-    //sceneManager.loadSceneAsync(3);
+    sceneManager.loadSceneAsync(3);
 }
 
 void renderGameObjects()
@@ -209,6 +209,8 @@ void run()
         lastFrame = currentFrame;
     	
         AssetManager::getInstance().instantiateNewLoadedAssets();
+        AssetManager::getInstance().generateNewLoadedTextures();
+
         SceneManager::getInstance().instantiateNewLoadedScenes();
     	
         processInput(window);
