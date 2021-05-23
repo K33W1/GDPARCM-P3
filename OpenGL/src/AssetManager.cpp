@@ -23,6 +23,12 @@ void AssetManager::initialize()
 	loadTextureFile("res/textures/apple_texture.png");
 	loadTextureFile("res/textures/coca_cola.png");
 	loadTextureFile("res/textures/ham.png");
+	loadTextureFile("res/textures/coin.png");
+	loadTextureFile("res/textures/blueShell.png");
+	loadTextureFile("res/textures/star.png");
+	loadTextureFile("res/textures/bow.png");
+	loadTextureFile("res/textures/superHammer.png");
+	loadTextureFile("res/textures/ancientPick.png");
 	
 	Shader* shader = getShader("textured");
 
@@ -37,6 +43,18 @@ void AssetManager::initialize()
 	createMaterial("coca_cola", shader, cocaColaTexture, glm::vec4(1.0f));
 	Texture* hamTexture = getTexture("ham");
 	createMaterial("ham", shader, hamTexture, glm::vec4(1.0f));
+	Texture* coinTexture = getTexture("coin");
+	createMaterial("coin", shader, coinTexture, glm::vec4(1.0f));
+	Texture* blueShellTexture = getTexture("blueShell");
+	createMaterial("blueShell", shader, blueShellTexture, glm::vec4(1.0f));
+	Texture* starTexture = getTexture("star");
+	createMaterial("star", shader, starTexture, glm::vec4(1.0f));
+	Texture* bowTexture = getTexture("bow");
+	createMaterial("bow", shader, bowTexture, glm::vec4(1.0f));
+	Texture* superHammerTexture = getTexture("superHammer");
+	createMaterial("superHammer", shader, superHammerTexture, glm::vec4(1.0f));
+	Texture* ancientPickTexture = getTexture("ancientPick");
+	createMaterial("ancientPick", shader, ancientPickTexture, glm::vec4(1.0f));
 }
 
 void AssetManager::loadMeshFile(const std::string& filepath)

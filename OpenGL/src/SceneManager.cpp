@@ -1,6 +1,8 @@
 #include "SceneManager.h"
 #include "SceneA.h"
 #include "SceneB.h"
+#include "SceneC.h"
+#include "SceneD.h"
 #include <iostream>
 #include <algorithm>
 #include <thread>
@@ -9,6 +11,8 @@ void SceneManager::initialize()
 {
 	allScenes.push_back(new SceneA());
 	allScenes.push_back(new SceneB());
+	allScenes.push_back(new SceneC());
+	allScenes.push_back(new SceneD());
 }
 
 void SceneManager::loadScene(int index)

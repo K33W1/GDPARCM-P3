@@ -24,6 +24,8 @@
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\MeshData.cpp" />
     <ClCompile Include="src\SceneB.cpp" />
+    <ClCompile Include="src\SceneC.cpp" />
+    <ClCompile Include="src\SceneD.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\SceneA.cpp" />
     <ClCompile Include="src\Scene.cpp" />
@@ -53,6 +55,8 @@
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\MeshData.h" />
     <ClInclude Include="src\SceneB.h" />
+    <ClInclude Include="src\SceneC.h" />
+    <ClInclude Include="src\SceneD.h" />
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\SceneA.h" />
     <ClInclude Include="src\Scene.h" />
