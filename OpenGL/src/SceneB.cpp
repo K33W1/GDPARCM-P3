@@ -9,6 +9,7 @@ SceneB::SceneB()
 	assets.push_back("ham");
 }
 
+/*
 void SceneB::loadAssets()
 {
 	// Load assets
@@ -74,3 +75,4 @@ void SceneB::unloadAssets()
 {
 	
 }
+*/

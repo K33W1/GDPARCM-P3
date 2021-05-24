@@ -9,6 +9,7 @@ SceneC::SceneC()
 	assets.push_back("star");
 }
 
+/*
 void SceneC::loadAssets()
 {
 	// Load assets
@@ -74,3 +75,4 @@ void SceneC::unloadAssets()
 {
 
 }
+*/

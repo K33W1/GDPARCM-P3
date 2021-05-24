@@ -145,6 +145,18 @@ void processInput(GLFWwindow* window)
     {
         glfwSetWindowShouldClose(window, true);
     }
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
+        SceneManager::getInstance().unloadScene(0);
+    }
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+        SceneManager::getInstance().unloadScene(1);
+    }
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+        SceneManager::getInstance().unloadScene(2);
+    }
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+        SceneManager::getInstance().unloadScene(3);
+    }
 }
 
 void mouseCallback(GLFWwindow* window, double dPosX, double dPosY)

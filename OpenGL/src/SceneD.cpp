@@ -9,6 +9,7 @@ SceneD::SceneD()
 	assets.push_back("superHammer");
 }
 
+/*
 void SceneD::loadAssets()
 {
 	// Load assets
@@ -73,3 +74,4 @@ void SceneD::unloadAssets()
 {
 
 }
+*/

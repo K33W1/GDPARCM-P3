@@ -12,6 +12,7 @@ SceneA::SceneA()
 	assets.push_back("bulbasaur");
 }
 
+/*
 void SceneA::loadAssets()
 {
 	// Load assets
@@ -75,3 +76,4 @@ void SceneA::unloadAssets()
 {
 	// TODO: Unload assets
 }
+*/

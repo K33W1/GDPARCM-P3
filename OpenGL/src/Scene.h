@@ -11,11 +11,11 @@ public:
 	Scene() = default;
 	virtual ~Scene() = default;
 
-	virtual void loadAssets() = 0;
-	virtual void loadGameObjects() = 0;
+	void loadAssets();
+	void loadGameObjects();
 	
 	void unloadGameObjects();
-	virtual void unloadAssets() = 0;
+	void unloadAssets();
 	
 	const std::vector<GameObject*> getGameObjects() const;
 
