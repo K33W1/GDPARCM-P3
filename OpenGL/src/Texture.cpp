@@ -1,7 +1,8 @@
 #include "Texture.h"
 #include <GL/glew.h>
+#include <stb_image/stb_image.h>
 
-Texture::Texture(const std::string& path, const int width, const int height, const int BPP, unsigned char* buffer)
+Texture::Texture(const std::string& path, int width, int height, int BPP, unsigned char* buffer)
 	: m_FilePath(path), m_Width(width), m_Height(height), m_BPP(BPP), m_LocalBuffer(buffer)
 {
 	glGenTextures(1, &m_RendererID);
@@ -12,6 +13,11 @@ Texture::Texture(const std::string& path, const int width, const int height, con
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	if (m_LocalBuffer != nullptr)
+	{
+		stbi_image_free(m_LocalBuffer);
+	}
 }
 
 Texture::~Texture()
@@ -30,9 +36,9 @@ void Texture::unbind() const
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-unsigned char* Texture::getImageData() const
+unsigned Texture::getRendererID() const
 {
-	return m_LocalBuffer;
+	return m_RendererID;
 }
 
 int Texture::getWidth() const

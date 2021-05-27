@@ -11,22 +11,22 @@ const std::string& TextureData::getFilePath() const
 	return filepath;
 }
 
-const int TextureData::getWidth() const
+int TextureData::getWidth() const
 {
 	return width;
 }
 
-const int TextureData::getHeight() const
+int TextureData::getHeight() const
 {
 	return height;
 }
 
-const int TextureData::getBPP() const
+int TextureData::getBPP() const
 {
 	return BPP;
 }
 
-unsigned char* TextureData::getBuffer()
+unsigned char* TextureData::getBuffer() const
 {
 	return buffer;
 }

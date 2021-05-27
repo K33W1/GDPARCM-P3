@@ -17,7 +17,6 @@
 void AssetManager::initialize()
 {
 	stbi_set_flip_vertically_on_load(1);
-	
 	loadPrimitiveMeshes();
 	loadShaderFile("res/shaders/textured.shader");
 }
@@ -43,8 +42,6 @@ void AssetManager::loadMeshFile(const std::string& filename)
 		return;
 	}
 
-	// TODO: Load submeshes
-	
 	// Loop over shapes
 	for (const tinyobj::shape_t& shape : shapes)
 	{
@@ -76,7 +73,9 @@ void AssetManager::loadTextureFile(const std::string& filename)
 {
 	std::string filepath = TEXTURE_PATH + filename + ".png";
 
-	int width, height, BPP;
+	int width;
+	int height;
+	int BPP;
 	unsigned char* buffer = stbi_load(filepath.c_str(), &width, &height, &BPP, 4);
 
 	texturesToGenerate.push_back({ filepath, width, height, BPP, buffer });
@@ -92,7 +91,7 @@ void AssetManager::loadShaderFile(const std::string& filepath)
 	shaders.emplace(getFileName(filepath), new Shader(filepath));
 }
 
-void AssetManager::instantiateNewLoadedAssets()
+void AssetManager::instantiateNewLoadedMeshes()
 {
 	for (int i = 0; i < meshesToInstantiate.size(); i++)
 	{
@@ -119,6 +118,8 @@ void AssetManager::instantiateNewLoadedAssets()
 
 void AssetManager::generateNewLoadedTextures()
 {
+	texturesToGenerate.manual_lock();
+	
 	for (TextureData& textureData : texturesToGenerate)
 	{
 		std::string filepath = textureData.getFilePath();
@@ -130,6 +131,7 @@ void AssetManager::generateNewLoadedTextures()
 		textures.emplace(getFileName(filepath), new Texture(filepath, width, height, BPP, buffer));
 	}
 
+	texturesToGenerate.manual_unlock();
 	texturesToGenerate.clear();
 }
 
@@ -191,7 +193,7 @@ Mesh* const AssetManager::getMesh(const std::string& name)
 
 Texture* const AssetManager::getTexture(const std::string& name)
 {
-	return textures.at(name);
+	return textures[name];
 }
 
 Shader* const AssetManager::getShader(const std::string& name)

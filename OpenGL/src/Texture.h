@@ -4,15 +4,16 @@
 class Texture
 {
 public:
-	Texture(const std::string& path, const int width, const int height, const int BPP, unsigned char* buffer);
+	Texture(const std::string& path, int width, int height, int BPP, unsigned char* buffer);
 	~Texture();
 
 	void bind(unsigned int slot = 0) const;
 	void unbind() const;
 
-	unsigned char* getImageData() const;
+	unsigned int getRendererID() const;
 	int getWidth() const;
 	int getHeight() const;
+
 
 private:
 	unsigned int m_RendererID;

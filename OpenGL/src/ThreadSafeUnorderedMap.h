@@ -9,12 +9,16 @@ public:
 	ThreadSafeUnorderedMap<Key, Value>() = default;
 	~ThreadSafeUnorderedMap() = default;
 
+	void manual_lock();
+	void manual_unlock();
+	
 	void insert(const Key& key, const Value& value);
 	void emplace(const Key& key, const Value& value);
 	void remove(const Key& key);
 	void clear();
 
 	Value at(const Key& key);
+	Value operator[](const Key& key);
 	
 	size_t size();
 	bool doesExist(const Key& key);
@@ -26,6 +30,18 @@ private:
 	std::unordered_map<Key, Value> unorderedMap;
 	Lightswitch lightswitch;
 };
+
+template <typename Key, typename Value>
+void ThreadSafeUnorderedMap<Key, Value>::manual_lock()
+{
+	lightswitch.priorityLock();
+}
+
+template <typename Key, typename Value>
+void ThreadSafeUnorderedMap<Key, Value>::manual_unlock()
+{
+	lightswitch.priorityUnlock();
+}
 
 template <typename Key, typename Value>
 void ThreadSafeUnorderedMap<Key, Value>::insert(const Key& key, const Value& value)
@@ -70,6 +86,16 @@ Value ThreadSafeUnorderedMap<Key, Value>::at(const Key& key)
 }
 
 template <typename Key, typename Value>
+Value ThreadSafeUnorderedMap<Key, Value>::operator[](const Key& key)
+{
+	lightswitch.sharedLock();
+	Value value = unorderedMap[key];
+	lightswitch.sharedUnlock();
+
+	return value;
+}
+
+template <typename Key, typename Value>
 size_t ThreadSafeUnorderedMap<Key, Value>::size()
 {
 	lightswitch.sharedLock();
@@ -92,19 +118,11 @@ bool ThreadSafeUnorderedMap<Key, Value>::doesExist(const Key& key)
 template <typename Key, typename Value>
 typename std::unordered_map<Key, Value>::iterator ThreadSafeUnorderedMap<Key, Value>::begin()
 {
-	lightswitch.sharedLock();
-	auto itr = unorderedMap.begin();
-	lightswitch.sharedUnlock();
-	
-	return itr;
+	return unorderedMap.begin();
 }
 
 template <typename Key, typename Value>
 typename std::unordered_map<Key, Value>::iterator ThreadSafeUnorderedMap<Key, Value>::end()
 {
-	lightswitch.sharedLock();
-	auto itr = unorderedMap.end();
-	lightswitch.sharedUnlock();
-	
-	return itr;
+	return unorderedMap.end();
 }

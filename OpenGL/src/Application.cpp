@@ -1,10 +1,12 @@
 #include "Renderer.h"
 #include "Shader.h"
-#include "Camera.h"
+#include "Material.h"
+#include "Texture.h"
+#include "Scene.h"
 #include "GameObject.h"
+#include "Camera.h"
 #include "AssetManager.h"
 #include "SceneManager.h"
-#include "Scene.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -13,7 +15,6 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <iostream>
-#include "Material.h"
 
 GLFWwindow* window;
 Renderer renderer;
@@ -84,16 +85,12 @@ bool initialize()
 void loadStartingAssets()
 {
     AssetManager::getInstance().initialize();
+    AssetManager::getInstance().loadTextureFile("pepe_kid_sad");
 }
 
 void loadStartingScene()
 {
-	SceneManager& sceneManager = SceneManager::getInstance();
-    sceneManager.initialize();
-    sceneManager.loadSceneAsync(0);
-    sceneManager.loadSceneAsync(1);
-    sceneManager.loadSceneAsync(2);
-    sceneManager.loadSceneAsync(3);
+    SceneManager::getInstance().initialize();
 }
 
 void renderGameObjects()
@@ -117,31 +114,33 @@ void renderGameObjects()
 
 void renderUI()
 {
-    // 1. Show a simple window.
-    // TODO: There's "update" behaviour inside the render function which is weird
-    if (SceneManager::getInstance().getActiveScenes().size() == 0)
-        return;
+    Texture* tex1 = AssetManager::getInstance().getTexture("pepe_kid_sad");
+    Texture* tex2 = AssetManager::getInstance().getTexture("pepe_kid_sad");
+    Texture* tex3 = AssetManager::getInstance().getTexture("pepe_kid_sad");
+    Texture* tex4 = AssetManager::getInstance().getTexture("pepe_kid_sad");
 
-    ImGui::Begin("A Very Cool Window 8)");
-
-    for (int i = 0; i < SceneManager::getInstance().getActiveScenes().size(); i++)
+    unsigned int scene1 = tex1->getRendererID();
+    unsigned int scene2 = tex2->getRendererID();
+    unsigned int scene3 = tex3->getRendererID();
+    unsigned int scene4 = tex4->getRendererID();
+	
+    ImGui::Begin("Control Panel");
+    if (ImGui::ImageButton((void*)(intptr_t)scene1, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
     {
-        Scene* const scene = SceneManager::getInstance().getActiveScenes()[i];
-
-        for (int j = 0; j < scene->getGameObjects().size(); j++)
-        {
-            GameObject* gameobject = scene->getGameObjects()[j];
-            glm::vec3 pos = gameobject->getPosition();
-
-            std::string sliderName = "Translation_" + std::to_string(i) + "_" + std::to_string(j);
-
-            ImGui::SliderFloat3(sliderName.c_str(), &pos.x, -200.0f, 200.0f);
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-            gameobject->setPosition(pos);
-        }
+        SceneManager::getInstance().loadSceneAsync(0);
     }
-
+    if (ImGui::ImageButton((void*)(intptr_t)scene2, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
+    {
+        SceneManager::getInstance().loadSceneAsync(1);
+    }
+    if (ImGui::ImageButton((void*)(intptr_t)scene3, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
+    {
+        SceneManager::getInstance().loadSceneAsync(2);
+    }
+    if (ImGui::ImageButton((void*)(intptr_t)scene4, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
+    {
+        SceneManager::getInstance().loadSceneAsync(3);
+    }
     ImGui::End();
 }
 
@@ -228,9 +227,8 @@ void run()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
     	
-        AssetManager::getInstance().instantiateNewLoadedAssets();
+        AssetManager::getInstance().instantiateNewLoadedMeshes();
         AssetManager::getInstance().generateNewLoadedTextures();
-
         SceneManager::getInstance().instantiateNewLoadedScenes();
     	
         processInput(window);

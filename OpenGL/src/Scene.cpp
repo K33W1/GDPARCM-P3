@@ -16,13 +16,15 @@ void Scene::loadAssets()
 	// Get shader
 	Shader* shader = assetManager.getShader("textured");
 
-	for (std::string filename : assets) {
+	for (std::string filename : assets)
+	{
 		assetManager.loadTextureFile(filename);
 		assetManager.loadMeshFile(filename);
 	}
 }
 
-void Scene::loadGameObjects() {
+void Scene::loadGameObjects()
+{
 	AssetManager& assetManager = AssetManager::getInstance();
 
 	Shader* shader = assetManager.getShader("textured");
@@ -51,14 +53,9 @@ void Scene::unloadGameObjects()
 	gameObjects.clear();
 }
 
-void Scene::unloadAssets() {
-	AssetManager& assetManager = AssetManager::getInstance();
-
-	for (std::string filename : assets) {
-		delete assetManager.getMaterial(filename);
-		delete assetManager.getTexture(filename);
-		delete assetManager.getMesh(filename);
-	}
+void Scene::unloadAssets()
+{
+	
 }
 
 const std::vector<GameObject*> Scene::getGameObjects() const
