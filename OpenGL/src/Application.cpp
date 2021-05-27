@@ -10,9 +10,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <imgui/imgui.h>
-#include <imgui/imgui_impl_glfw_gl3.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 #include <iostream>
-
 #include "Material.h"
 
 GLFWwindow* window;
@@ -68,9 +68,12 @@ bool initialize()
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
+    IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui_ImplGlfwGL3_Init(window, true);
+    ImGuiIO& io = ImGui::GetIO();
     ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
 
     // glfwSetCursorPosCallback(window, mouseCallback);
     glfwSetScrollCallback(window, scrollCallback);
@@ -115,10 +118,11 @@ void renderGameObjects()
 void renderUI()
 {
     // 1. Show a simple window.
-    // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
     // TODO: There's "update" behaviour inside the render function which is weird
     if (SceneManager::getInstance().getActiveScenes().size() == 0)
         return;
+
+    ImGui::Begin("A Very Cool Window 8)");
 
     for (int i = 0; i < SceneManager::getInstance().getActiveScenes().size(); i++)
     {
@@ -137,6 +141,8 @@ void renderUI()
             gameobject->setPosition(pos);
         }
     }
+
+    ImGui::End();
 }
 
 void processInput(GLFWwindow* window)
@@ -200,13 +206,15 @@ void update()
 void render()
 {
 	renderer.clear();
-	ImGui_ImplGlfwGL3_NewFrame();
+	ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
     	
 	renderGameObjects();
 	renderUI();
 
 	ImGui::Render();
-	ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     	
 	glfwSwapBuffers(window);
 	glfwPollEvents();
@@ -233,7 +241,8 @@ void run()
 
 void shutdown()
 {
-    ImGui_ImplGlfwGL3_Shutdown();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
     glfwTerminate();
 }
