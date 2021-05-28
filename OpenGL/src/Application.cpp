@@ -21,17 +21,20 @@ GLFWwindow* window;
 Renderer renderer;
 const unsigned int WINDOW_WIDTH = 1280;
 const unsigned int WINDOW_HEIGHT = 720;
-
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+// Camera
 Camera camera;
-
 bool firstMouse = true;
+bool isMouseDown = false;
 float lastX = WINDOW_WIDTH * 0.5f;
 float lastY = WINDOW_HEIGHT * 0.5f;
 
-void mouseCallback(GLFWwindow* window, double posX, double posY);
+// Callbacks
+void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void mousePositionCallback(GLFWwindow* window, double posX, double posY);
 void scrollCallback(GLFWwindow* window, double offsetX, double offsetY);
 
 bool initialize()
@@ -72,12 +75,12 @@ bool initialize()
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    // glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    glfwSetCursorPosCallback(window, mousePositionCallback);
     glfwSetScrollCallback(window, scrollCallback);
 
 	return true;
@@ -87,6 +90,9 @@ void loadStartingAssets()
 {
     AssetManager::getInstance().initialize();
     AssetManager::getInstance().loadTextureFile("pepe_kid_sad");
+    AssetManager::getInstance().loadTextureFile("pepe_kid_celebrate");
+    AssetManager::getInstance().loadTextureFile("pepe_nervous");
+    AssetManager::getInstance().loadTextureFile("pepe_celebrate");
 }
 
 void loadStartingScene()
@@ -115,49 +121,57 @@ void renderGameObjects()
 
 void renderUI()
 {
-    Texture* tex1 = AssetManager::getInstance().getTexture("pepe_kid_sad");
-    Texture* tex2 = AssetManager::getInstance().getTexture("pepe_kid_sad");
-    Texture* tex3 = AssetManager::getInstance().getTexture("pepe_kid_sad");
-    Texture* tex4 = AssetManager::getInstance().getTexture("pepe_kid_sad");
-
-    unsigned int scene1 = tex1->getRendererID();
-    unsigned int scene2 = tex2->getRendererID();
-    unsigned int scene3 = tex3->getRendererID();
-    unsigned int scene4 = tex4->getRendererID();
-
+    SceneManager& sceneManager = SceneManager::getInstance();
+	
     int windowSizeX;
     int windowSizeY;
     glfwGetWindowSize(window, &windowSizeX, &windowSizeY);
+    ImVec2 buttonUv0 = ImVec2(0, 1);
+    ImVec2 buttonUv1 = ImVec2(1, 0);
+    Texture* tex1 = AssetManager::getInstance().getTexture("pepe_kid_sad");
+    Texture* tex2 = AssetManager::getInstance().getTexture("pepe_kid_celebrate");
+    Texture* tex3 = AssetManager::getInstance().getTexture("pepe_nervous");
+    Texture* tex4 = AssetManager::getInstance().getTexture("pepe_celebrate");
+    unsigned int tex1Id = tex1->getRendererID();
+    unsigned int tex2Id = tex2->getRendererID();
+    unsigned int tex3Id = tex3->getRendererID();
+    unsigned int tex4Id = tex4->getRendererID();
+	
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(windowSizeX, 192));
     ImGui::Begin("Scene Viewer");
-    if (ImGui::ImageButton((void*)(intptr_t)scene1, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
+    if (ImGui::ImageButton((void*)(intptr_t)tex1Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        SceneManager::getInstance().loadSceneAsync(0);
+        sceneManager.loadSceneAsync(0);
     }
     ImGui::SameLine(0, 32);
-    if (ImGui::ImageButton((void*)(intptr_t)scene2, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
+    if (ImGui::ImageButton((void*)(intptr_t)tex2Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        SceneManager::getInstance().loadSceneAsync(1);
+        sceneManager.loadSceneAsync(1);
     }
     ImGui::SameLine(0, 32);
-    if (ImGui::ImageButton((void*)(intptr_t)scene3, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
+    if (ImGui::ImageButton((void*)(intptr_t)tex3Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        SceneManager::getInstance().loadSceneAsync(2);
+        sceneManager.loadSceneAsync(2);
     }
     ImGui::SameLine(0, 32);
-    if (ImGui::ImageButton((void*)(intptr_t)scene4, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
+    if (ImGui::ImageButton((void*)(intptr_t)tex4Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        SceneManager::getInstance().loadSceneAsync(3);
+        sceneManager.loadSceneAsync(3);
     }
 
-    ImGui::ProgressBar(0.1f, ImVec2(136, 16));
+    float progress1 = sceneManager.getScene(0)->getPercentLoaded();
+    float progress2 = sceneManager.getScene(1)->getPercentLoaded();
+    float progress3 = sceneManager.getScene(2)->getPercentLoaded();
+    float progress4 = sceneManager.getScene(3)->getPercentLoaded();
+
+    ImGui::ProgressBar(progress1, ImVec2(136, 16));
     ImGui::SameLine(0, 32);
-    ImGui::ProgressBar(0.3f, ImVec2(136, 16));
+    ImGui::ProgressBar(progress2, ImVec2(136, 16));
     ImGui::SameLine(0, 32);
-    ImGui::ProgressBar(0.8f, ImVec2(136, 16));
+    ImGui::ProgressBar(progress3, ImVec2(136, 16));
     ImGui::SameLine(0, 32);
-    ImGui::ProgressBar(1.0f, ImVec2(136, 16));
+    ImGui::ProgressBar(progress4, ImVec2(136, 16));
     
     ImGui::End();
 }
@@ -168,21 +182,62 @@ void processInput(GLFWwindow* window)
     {
         glfwSetWindowShouldClose(window, true);
     }
-    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
+
+	// Unload scenes
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+    {
         SceneManager::getInstance().unloadScene(0);
     }
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+    {
         SceneManager::getInstance().unloadScene(1);
     }
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+    {
         SceneManager::getInstance().unloadScene(2);
     }
-    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+    {
         SceneManager::getInstance().unloadScene(3);
+    }
+
+	// Camera
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+        camera.processKeyboard(CameraMovement::FORWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+        camera.processKeyboard(CameraMovement::BACKWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+        camera.processKeyboard(CameraMovement::RIGHT, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+        camera.processKeyboard(CameraMovement::LEFT, deltaTime);
+	}
+}
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT)
+    {
+    	if (action == GLFW_PRESS)
+    	{
+			isMouseDown = true;
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    	}
+        else if (action == GLFW_RELEASE)
+        {
+            isMouseDown = false;
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
     }
 }
 
-void mouseCallback(GLFWwindow* window, double dPosX, double dPosY)
+void mousePositionCallback(GLFWwindow* window, double dPosX, double dPosY)
 {
     float posX = (float)dPosX;
     float posY = (float)dPosY;
@@ -199,7 +254,10 @@ void mouseCallback(GLFWwindow* window, double dPosX, double dPosY)
     lastX = posX;
     lastY = posY;
 
-    camera.processMouseMovement(xoffset, yoffset);
+    if (isMouseDown)
+    {
+        camera.processMouseMovement(xoffset, yoffset);
+    }
 }
 
 void scrollCallback(GLFWwindow* window, double offsetX, double offsetY)

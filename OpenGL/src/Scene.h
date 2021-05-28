@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>
 #include <string>
-#include <chrono>
+#include <mutex>
+#include "ThreadSafeVector.h"
 
 class GameObject;
 
@@ -16,14 +16,19 @@ public:
 	
 	void unloadGameObjects();
 	void unloadAssets();
+
+	void manualSharedLockGameObjects();
+	void manualSharedUnlockGameObjects();
 	
-	const std::vector<GameObject*> getGameObjects() const;
+	ThreadSafeVector<GameObject*>& getGameObjects();
+	bool isLoaded();
+	float getPercentLoaded();
 
 protected:
-	void addGameObject(GameObject* gameObject);
-
-	std::vector<std::string> assets;
+	void addAsset(const std::string& assetName);
 
 private:
-	std::vector<GameObject*> gameObjects;
+	ThreadSafeVector<std::string> assets;
+	ThreadSafeVector<GameObject*> gameObjects;
+	int assetsLoaded;
 };

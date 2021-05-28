@@ -2,9 +2,9 @@
 #include "Singleton.h"
 #include "ThreadSafeVector.h"
 #include <vector>
-#include <thread>
 
 class Scene;
+class SceneLoadingThread;
 
 class SceneManager : public Singleton<SceneManager>
 {
@@ -19,13 +19,14 @@ public:
 	void loadSceneAsync(int index);
 	void unloadScene(int index);
 
+	Scene* getScene(int index) const;
 	const std::vector<Scene*>& getActiveScenes();
 
 private:
 	SceneManager() = default;
 	~SceneManager() override = default;
 
-	ThreadSafeVector<std::thread*> loadingSceneThreads;
+	ThreadSafeVector<SceneLoadingThread*> sceneLoadingThreads;
 	ThreadSafeVector<Scene*> newLoadedScenes;
 	std::vector<Scene*> activeScenes;
 	std::vector<Scene*> allScenes;

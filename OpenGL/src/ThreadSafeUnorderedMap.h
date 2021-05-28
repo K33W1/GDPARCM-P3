@@ -18,7 +18,7 @@ public:
 	void clear();
 
 	Value at(const Key& key);
-	Value operator[](const Key& key);
+	Value& operator[](const Key& key);
 	
 	size_t size();
 	bool doesExist(const Key& key);
@@ -86,7 +86,7 @@ Value ThreadSafeUnorderedMap<Key, Value>::at(const Key& key)
 }
 
 template <typename Key, typename Value>
-Value ThreadSafeUnorderedMap<Key, Value>::operator[](const Key& key)
+Value& ThreadSafeUnorderedMap<Key, Value>::operator[](const Key& key)
 {
 	lightswitch.sharedLock();
 	Value value = unorderedMap[key];

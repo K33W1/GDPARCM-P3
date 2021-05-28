@@ -64,11 +64,6 @@ void AssetManager::loadMeshFile(const std::string& filename)
 	}
 }
 
-void AssetManager::loadMeshFileAsync(const std::string& filepath)
-{
-	
-}
-
 void AssetManager::loadTextureFile(const std::string& filename)
 {
 	std::string filepath = TEXTURE_PATH + filename + ".png";
@@ -81,11 +76,6 @@ void AssetManager::loadTextureFile(const std::string& filename)
 	texturesToGenerate.push_back({ filepath, width, height, BPP, buffer });
 }
 
-void AssetManager::loadTextureFileAsync(const std::string& filepath)
-{
-	
-}
-
 void AssetManager::loadShaderFile(const std::string& filepath)
 {
 	shaders.emplace(getFileName(filepath), new Shader(filepath));
@@ -93,9 +83,10 @@ void AssetManager::loadShaderFile(const std::string& filepath)
 
 void AssetManager::instantiateNewLoadedMeshes()
 {
-	for (int i = 0; i < meshesToInstantiate.size(); i++)
+	meshesToInstantiate.manualSharedLock();
+	
+	for (const MeshData& meshData : meshesToInstantiate)
 	{
-		const auto& meshData = meshesToInstantiate[i];
 		const auto& vertexData = meshData.getVertexData();
 		const auto& indices = meshData.getIndices();
 		const auto fileName = getFileName(meshData.getFilePath());
@@ -113,12 +104,13 @@ void AssetManager::instantiateNewLoadedMeshes()
 		std::cout << "Added mesh: " << fileName << '\n';
 	}
 
+	meshesToInstantiate.manualSharedUnlock();
 	meshesToInstantiate.clear();
 }
 
 void AssetManager::generateNewLoadedTextures()
 {
-	texturesToGenerate.manual_lock();
+	texturesToGenerate.manualPriorityLock();
 	
 	for (TextureData& textureData : texturesToGenerate)
 	{
@@ -131,7 +123,7 @@ void AssetManager::generateNewLoadedTextures()
 		textures.emplace(getFileName(filepath), new Texture(filepath, width, height, BPP, buffer));
 	}
 
-	texturesToGenerate.manual_unlock();
+	texturesToGenerate.manualPriorityUnlock();
 	texturesToGenerate.clear();
 }
 

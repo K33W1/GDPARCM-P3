@@ -9,8 +9,10 @@ public:
 	ThreadSafeVector<T>() = default;
 	~ThreadSafeVector() = default;
 
-	void manual_lock();
-	void manual_unlock();
+	void manualPriorityLock();
+	void manualPriorityUnlock();
+	void manualSharedLock();
+	void manualSharedUnlock();
 	
 	void push_back(T t);
 	void remove(T t);
@@ -18,7 +20,7 @@ public:
 
 	size_t size();
 
-	T operator[](unsigned int index);
+	T& operator[](unsigned int index);
 
 	std::vector<T>::iterator begin();
 	std::vector<T>::iterator end();
@@ -29,15 +31,27 @@ private:
 };
 
 template <typename T>
-void ThreadSafeVector<T>::manual_lock()
+void ThreadSafeVector<T>::manualPriorityLock()
 {
 	lightswitch.priorityLock();
 }
 
 template <typename T>
-void ThreadSafeVector<T>::manual_unlock()
+void ThreadSafeVector<T>::manualPriorityUnlock()
 {
 	lightswitch.priorityUnlock();
+}
+
+template <typename T>
+void ThreadSafeVector<T>::manualSharedLock()
+{
+	lightswitch.sharedLock();
+}
+
+template <typename T>
+void ThreadSafeVector<T>::manualSharedUnlock()
+{
+	lightswitch.sharedUnlock();
 }
 
 template <typename T>
@@ -75,7 +89,7 @@ size_t ThreadSafeVector<T>::size()
 }
 
 template <typename T>
-T ThreadSafeVector<T>::operator[](unsigned index)
+T& ThreadSafeVector<T>::operator[](unsigned index)
 {
 	lightswitch.sharedLock();
 	T t = vector.at(index);

@@ -3,9 +3,9 @@
 #include "SceneB.h"
 #include "SceneC.h"
 #include "SceneD.h"
+#include "SceneLoadingThread.h"
 #include <iostream>
 #include <algorithm>
-#include <thread>
 
 void SceneManager::initialize()
 {
@@ -13,6 +13,10 @@ void SceneManager::initialize()
 	allScenes.push_back(new SceneB());
 	allScenes.push_back(new SceneC());
 	allScenes.push_back(new SceneD());
+	sceneLoadingThreads.push_back(nullptr);
+	sceneLoadingThreads.push_back(nullptr);
+	sceneLoadingThreads.push_back(nullptr);
+	sceneLoadingThreads.push_back(nullptr);
 }
 
 void SceneManager::loadScene(int index)
@@ -33,9 +37,8 @@ void SceneManager::loadScene(int index)
 
 void SceneManager::loadSceneAsync(int index)
 {
-	std::thread* thread = new std::thread(&SceneManager::loadScene, this, index);
-	loadingSceneThreads.push_back(thread);
-	thread->detach();
+	SceneLoadingThread* thread = new SceneLoadingThread(index);
+	sceneLoadingThreads[index] = thread;
 }
 
 void SceneManager::unloadScene(int index)
@@ -53,6 +56,14 @@ void SceneManager::unloadScene(int index)
 	
 	scene->unloadGameObjects();
 	scene->unloadAssets();
+}
+
+// TODO: Toggle scene
+// TODO: Unload scene async
+
+Scene* SceneManager::getScene(int index) const
+{
+	return allScenes[index];
 }
 
 void SceneManager::instantiateNewLoadedScenes()

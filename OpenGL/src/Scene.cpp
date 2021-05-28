@@ -2,32 +2,23 @@
 #include "AssetManager.h"
 #include "GameObject.h"
 #include "Random.h"
-#include <iostream>
-
-void Scene::addGameObject(GameObject* gameObject)
-{
-	gameObjects.push_back(gameObject);
-}
 
 void Scene::loadAssets()
 {
-	// Load assets
 	AssetManager& assetManager = AssetManager::getInstance();
-
-	// Get shader
-	Shader* shader = assetManager.getShader("textured");
 
 	for (std::string filename : assets)
 	{
 		assetManager.loadTextureFile(filename);
+		assetsLoaded++;
 		assetManager.loadMeshFile(filename);
+		assetsLoaded++;
 	}
 }
 
 void Scene::loadGameObjects()
 {
 	AssetManager& assetManager = AssetManager::getInstance();
-
 	Shader* shader = assetManager.getShader("textured");
 
 	for (std::string filename : assets)
@@ -40,11 +31,11 @@ void Scene::loadGameObjects()
 
 		GameObject* go = new GameObject(mesh, material);
 		float posX = Random::getRandom(-25.0f, 25.0f);
-		float posY = Random::getRandom(-25.0f, 25.0f);
-		float posZ = Random::getRandom(-75.0f, -50.0f);
+		float posY = Random::getRandom(-50.0f, 25.0f);
+		float posZ = Random::getRandom(-150.0f, -50.0f);
 		go->setPosition({ posX, posY, posZ });
 		go->setScale({ 5.0f, 5.0f, 5.0f });
-		addGameObject(go);
+		gameObjects.push_back(go);
 	}
 }
 
@@ -60,10 +51,35 @@ void Scene::unloadGameObjects()
 
 void Scene::unloadAssets()
 {
-	
+	assetsLoaded = 0;
 }
 
-const std::vector<GameObject*> Scene::getGameObjects() const
+void Scene::manualSharedLockGameObjects()
+{
+	gameObjects.manualSharedLock();
+}
+
+void Scene::manualSharedUnlockGameObjects()
+{
+	gameObjects.manualSharedUnlock();
+}
+
+ThreadSafeVector<GameObject*>& Scene::getGameObjects()
 {
 	return gameObjects;
+}
+
+bool Scene::isLoaded()
+{
+	return gameObjects.size() == assets.size();
+}
+
+float Scene::getPercentLoaded()
+{
+	return (float)assetsLoaded / (assets.size() * 2);
+}
+
+void Scene::addAsset(const std::string& assetName)
+{
+	assets.push_back(assetName);
 }
