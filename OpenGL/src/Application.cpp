@@ -127,11 +127,13 @@ void renderUI()
 {
     SceneManager& sceneManager = SceneManager::getInstance();
 	
-    int windowSizeX;
-    int windowSizeY;
-    glfwGetWindowSize(window, &windowSizeX, &windowSizeY);
+    int glfwWindowSizeX;
+    int glfwWindowSizeY;
+    glfwGetWindowSize(window, &glfwWindowSizeX, &glfwWindowSizeY);
     ImVec2 buttonUv0 = ImVec2(0, 1);
     ImVec2 buttonUv1 = ImVec2(1, 0);
+    // ImVec4 buttonBgColor = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    // ImVec4 buttonTint = ImVec4(0.5f, 0.5f, 0.5f, 0.5f);
 	
     Texture* tex1 = AssetManager::getInstance().getTexture("pepe_kid_sad");
     Texture* tex2 = AssetManager::getInstance().getTexture("pepe_kid_celebrate");
@@ -144,7 +146,7 @@ void renderUI()
     unsigned int tex4Id = tex4->getRendererID();
 	
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2(windowSizeX, 192));
+    ImGui::SetNextWindowSize(ImVec2(glfwWindowSizeX, 192));
     ImGui::Begin("Scene Viewer");
     if (ImGui::ImageButton((void*)(intptr_t)tex1Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
@@ -171,20 +173,62 @@ void renderUI()
         sceneManager.loadAllScenesAsync();
     }
 
+    const ImVec2 progressBarSize = ImVec2(136, 16);
     float progress1 = sceneManager.getScene(0)->getPercentLoaded();
     float progress2 = sceneManager.getScene(1)->getPercentLoaded();
     float progress3 = sceneManager.getScene(2)->getPercentLoaded();
     float progress4 = sceneManager.getScene(3)->getPercentLoaded();
 
-    ImGui::ProgressBar(progress1, ImVec2(136, 16));
+    if (sceneManager.getScene(0)->getSceneState() == SceneState::Loading)
+	{
+		ImGui::ProgressBar(progress1, progressBarSize);
+    }
+    else
+    {
+        ImGui::Dummy(progressBarSize);
+    }
     ImGui::SameLine(0, 32);
-    ImGui::ProgressBar(progress2, ImVec2(136, 16));
+    if (sceneManager.getScene(1)->getSceneState() == SceneState::Loading)
+	{
+		ImGui::ProgressBar(progress2, progressBarSize);
+    }
+    else
+    {
+        ImGui::Dummy(progressBarSize);
+    }
     ImGui::SameLine(0, 32);
-    ImGui::ProgressBar(progress3, ImVec2(136, 16));
+    if (sceneManager.getScene(2)->getSceneState() == SceneState::Loading)
+	{
+		ImGui::ProgressBar(progress3, progressBarSize);
+    }
+    else
+    {
+        ImGui::Dummy(progressBarSize);
+    }
     ImGui::SameLine(0, 32);
-    ImGui::ProgressBar(progress4, ImVec2(136, 16));
+    if (sceneManager.getScene(3)->getSceneState() == SceneState::Loading)
+	{
+		ImGui::ProgressBar(progress4, progressBarSize);
+    }
     
     ImGui::End();
+
+    if (sceneManager.getMainScene() != nullptr && sceneManager.getMainScene()->getSceneState() == SceneState::Loading)
+    {
+        float mainScenePercentLoaded = sceneManager.getMainScene()->getPercentLoaded();
+
+        ImVec2 glfwWindowSize(glfwWindowSizeX / 2, glfwWindowSizeY / 2);
+        ImVec2 loadingBarSize(256.0f, 16.0f);
+        ImVec2 loadingBarHalfSize(loadingBarSize.x / 2, loadingBarSize.y / 2);
+        ImVec2 loadingBarWindowSize(loadingBarSize.x + 32.0f, loadingBarSize.y + 40.0f);
+        ImVec2 loadingBarWindowPos(glfwWindowSize.x - loadingBarHalfSize.x, glfwWindowSize.y - loadingBarHalfSize.y);;
+    	
+        ImGui::SetNextWindowSize(loadingBarWindowSize);
+        ImGui::SetNextWindowPos(loadingBarWindowPos);
+    	ImGui::Begin("Loading Bar");
+        ImGui::ProgressBar(mainScenePercentLoaded, loadingBarSize);
+        ImGui::End();
+    }
 }
 
 void processInput(GLFWwindow* window)

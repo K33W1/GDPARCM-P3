@@ -4,6 +4,7 @@
 #include "SceneC.h"
 #include "SceneD.h"
 #include "SceneLoadingThread.h"
+#include "MainSceneLoadingThread.h"
 #include <iostream>
 #include <algorithm>
 
@@ -13,6 +14,21 @@ void SceneManager::initialize()
 	allScenes.push_back(new SceneB());
 	allScenes.push_back(new SceneC());
 	allScenes.push_back(new SceneD());
+}
+
+void SceneManager::loadSceneAsMain(int index)
+{
+	Scene* scene = allScenes[index];
+	auto sceneItr = std::find(activeScenes.begin(), activeScenes.end(), scene);
+
+	if (sceneItr != activeScenes.end())
+	{
+		std::cout << "Tried to load an already loaded scene!\n";
+		return;
+	}
+
+	mainLoadingScene = scene;
+	loadScene(scene);
 }
 
 void SceneManager::loadScene(int index)
@@ -25,15 +41,24 @@ void SceneManager::loadScene(int index)
 		std::cout << "Tried to load an already loaded scene!\n";
 		return;
 	}
-	
+
+	loadScene(scene);
+}
+
+void SceneManager::loadScene(Scene* scene)
+{
 	scene->loadAssets();
-	
 	newLoadedScenes.push_back(scene);
 }
 
 void SceneManager::loadSceneAsync(int index)
 {
 	new SceneLoadingThread(index);
+}
+
+void SceneManager::loadSceneAsMainAsync(int index)
+{
+	new MainSceneLoadingThread(index);
 }
 
 void SceneManager::loadAllScenesAsync()
@@ -69,9 +94,18 @@ void SceneManager::unloadSceneAsync(int index)
 	unloadScene(index);
 }
 
-Scene* SceneManager::getScene(int index) const
+void SceneManager::toggleScene(int index)
 {
-	return allScenes[index];
+	SceneState sceneState = allScenes[index]->getSceneState();
+	
+	if (sceneState == SceneState::Inactive)
+	{
+		loadSceneAsMainAsync(index);
+	}
+	else if (sceneState == SceneState::Active)
+	{
+		unloadSceneAsync(index);
+	}
 }
 
 void SceneManager::instantiateNewLoadedScenes()
@@ -85,18 +119,14 @@ void SceneManager::instantiateNewLoadedScenes()
 	newLoadedScenes.clear();
 }
 
-void SceneManager::toggleScene(int index)
+Scene* SceneManager::getScene(int index) const
 {
-	SceneState sceneState = allScenes[index]->getSceneState();
-	
-	if (sceneState == SceneState::Inactive)
-	{
-		loadSceneAsync(index);
-	}
-	else if (sceneState == SceneState::Active)
-	{
-		unloadSceneAsync(index);
-	}
+	return allScenes[index];
+}
+
+Scene* SceneManager::getMainScene() const
+{
+	return mainLoadingScene;
 }
 
 const std::vector<Scene*>& SceneManager::getActiveScenes()
