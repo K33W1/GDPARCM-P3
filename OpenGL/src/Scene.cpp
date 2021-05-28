@@ -20,15 +20,13 @@ void Scene::loadAssets()
 
 	sceneState = SceneState::Loading;
 	
-	for (std::string filename : assets)
+	for (const std::string& filename : assets)
 	{
 		AssetManager::getInstance().loadTextureFile(filename);
 		assetsLoaded++;
 		AssetManager::getInstance().loadMeshFile(filename);
 		assetsLoaded++;
 	}
-	
-	sceneState = SceneState::Active;
 }
 
 void Scene::loadGameObjects()
@@ -36,7 +34,7 @@ void Scene::loadGameObjects()
 	AssetManager& assetManager = AssetManager::getInstance();
 	Shader* shader = assetManager.getShader("textured");
 
-	for (std::string filename : assets)
+	for (const std::string& filename : assets)
 	{
 		Texture* texture = assetManager.getTexture(filename);
 		assetManager.createMaterial(filename, shader, texture, glm::vec4(1.0f));
@@ -52,6 +50,8 @@ void Scene::loadGameObjects()
 		go->setScale({ 5.0f, 5.0f, 5.0f });
 		gameObjects.push_back(go);
 	}
+
+	sceneState = SceneState::Active;
 }
 
 void Scene::unloadAssetsAndGameObjects()
@@ -81,16 +81,6 @@ void Scene::unloadAssetsAndGameObjects()
 	gameObjects.clear();
 	
 	sceneState = SceneState::Inactive;
-}
-
-void Scene::manualSharedLockGameObjects()
-{
-	gameObjects.manualSharedLock();
-}
-
-void Scene::manualSharedUnlockGameObjects()
-{
-	gameObjects.manualSharedUnlock();
 }
 
 ThreadSafeVector<GameObject*>& Scene::getGameObjects()

@@ -98,6 +98,10 @@ void loadStartingAssets()
 void loadStartingScene()
 {
     SceneManager::getInstance().initialize();
+    SceneManager::getInstance().loadSceneAsync(0);
+    SceneManager::getInstance().loadSceneAsync(1);
+    SceneManager::getInstance().loadSceneAsync(2);
+    SceneManager::getInstance().loadSceneAsync(3);
 }
 
 void renderGameObjects()
@@ -289,8 +293,8 @@ void run()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
     	
+        AssetManager::getInstance().instantiateNewLoadedTextures();
         AssetManager::getInstance().instantiateNewLoadedMeshes();
-        AssetManager::getInstance().generateNewLoadedTextures();
         SceneManager::getInstance().instantiateNewLoadedScenes();
     	
         processInput(window);

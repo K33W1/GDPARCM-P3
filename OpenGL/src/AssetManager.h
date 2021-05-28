@@ -30,7 +30,7 @@ public:
 	void createMaterial(const std::string& name, Shader* shader, Texture* texture, const glm::vec4& color);
 
 	void instantiateNewLoadedMeshes();
-	void generateNewLoadedTextures();
+	void instantiateNewLoadedTextures();
 	
 	bool isMeshLoaded(const std::string& name);
 	bool isTextureLoaded(const std::string& name);

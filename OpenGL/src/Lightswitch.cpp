@@ -15,7 +15,8 @@ void Lightswitch::sharedLock()
 {
 	sharedSemaphore.acquire();
 	counterSemaphore.acquire();
-	if (++counter == 1)
+	counter++;
+	if (counter == 1)
 	{
 		prioritySemaphore.acquire();
 	}
@@ -26,7 +27,8 @@ void Lightswitch::sharedLock()
 void Lightswitch::sharedUnlock()
 {
 	counterSemaphore.acquire();
-	if (--counter == 0)
+	counter--;
+	if (counter == 0)
 	{
 		prioritySemaphore.release();
 	}

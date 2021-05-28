@@ -17,6 +17,7 @@ public:
 	void push_back(T t);
 	void remove(T t);
 	void clear();
+	void clearNoLock();
 
 	size_t size();
 
@@ -79,6 +80,12 @@ void ThreadSafeVector<T>::clear()
 }
 
 template <typename T>
+void ThreadSafeVector<T>::clearNoLock()
+{
+	vector.clear();
+}
+
+template <typename T>
 size_t ThreadSafeVector<T>::size()
 {
 	lightswitch.sharedLock();
@@ -92,7 +99,7 @@ template <typename T>
 T& ThreadSafeVector<T>::operator[](unsigned index)
 {
 	lightswitch.sharedLock();
-	T t = vector.at(index);
+	T& t = vector.at(index);
 	lightswitch.sharedUnlock();
 	
 	return t;

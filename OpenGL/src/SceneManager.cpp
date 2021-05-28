@@ -59,7 +59,8 @@ void SceneManager::unloadScene(int index)
 
 void SceneManager::unloadSceneAsync(int index)
 {
-	
+	// TODO: Make it async
+	unloadScene(index);
 }
 
 Scene* SceneManager::getScene(int index) const
@@ -88,8 +89,7 @@ void SceneManager::toggleScene(int index)
 	}
 	else if (sceneState == SceneState::Active)
 	{
-		unloadScene(index);
-		//unloadSceneAsync(index);
+		unloadSceneAsync(index);
 	}
 }
 

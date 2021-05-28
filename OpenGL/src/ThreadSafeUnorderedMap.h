@@ -80,7 +80,7 @@ template <typename Key, typename Value>
 Value& ThreadSafeUnorderedMap<Key, Value>::operator[](const Key& key)
 {
 	lightswitch.sharedLock();
-	Value value = unorderedMap[key];
+	Value& value = unorderedMap[key];
 	lightswitch.sharedUnlock();
 
 	return value;

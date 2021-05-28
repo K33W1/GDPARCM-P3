@@ -24,9 +24,6 @@ public:
 	
 	void unloadAssetsAndGameObjects();
 
-	void manualSharedLockGameObjects();
-	void manualSharedUnlockGameObjects();
-	
 	ThreadSafeVector<GameObject*>& getGameObjects();
 	SceneState getSceneState() const;
 	bool isLoaded();
@@ -36,7 +33,7 @@ protected:
 	void addAsset(const std::string& assetName);
 
 private:
-	ThreadSafeVector<std::string> assets;
+	std::vector<std::string> assets;
 	ThreadSafeVector<GameObject*> gameObjects;
 	SceneState sceneState;
 	int assetsLoaded;

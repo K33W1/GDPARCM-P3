@@ -58,6 +58,8 @@ void AssetManager::loadMeshFile(const std::string& filename)
 			vertexData.push_back(mesh.texcoords[2 * i + 1]);
 		}
 
+		std::cout << "Loaded mesh: " << filepath << '\n';
+		
 		meshesToInstantiate.push_back({ filepath, vertexData, mesh.indices });
 
 		break; // Load only the first submesh
@@ -104,7 +106,7 @@ void AssetManager::unloadMaterial(const std::string& filename)
 
 void AssetManager::instantiateNewLoadedMeshes()
 {
-	meshesToInstantiate.manualSharedLock();
+	meshesToInstantiate.manualPriorityLock();
 	
 	for (const MeshData& meshData : meshesToInstantiate)
 	{
@@ -122,14 +124,16 @@ void AssetManager::instantiateNewLoadedMeshes()
 
 		meshes.insert(fileName, new Mesh(va, ib));
 
+		// delete layout;
+		
 		std::cout << "Added mesh: " << fileName << '\n';
 	}
-
-	meshesToInstantiate.manualSharedUnlock();
-	meshesToInstantiate.clear();
+	
+	meshesToInstantiate.clearNoLock();
+	meshesToInstantiate.manualPriorityUnlock();
 }
 
-void AssetManager::generateNewLoadedTextures()
+void AssetManager::instantiateNewLoadedTextures()
 {
 	texturesToGenerate.manualPriorityLock();
 	
@@ -144,8 +148,8 @@ void AssetManager::generateNewLoadedTextures()
 		textures.insert(getFileName(filepath), new Texture(filepath, width, height, BPP, buffer));
 	}
 
+	texturesToGenerate.clearNoLock();
 	texturesToGenerate.manualPriorityUnlock();
-	texturesToGenerate.clear();
 }
 
 void AssetManager::loadPrimitiveMeshes()
