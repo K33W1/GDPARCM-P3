@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "AssetManager.h"
 #include "GameObject.h"
+#include "Random.h"
 #include <iostream>
 
 void Scene::addGameObject(GameObject* gameObject)
@@ -29,7 +30,8 @@ void Scene::loadGameObjects()
 
 	Shader* shader = assetManager.getShader("textured");
 
-	for (std::string filename : assets) {
+	for (std::string filename : assets)
+	{
 		Texture* texture = assetManager.getTexture(filename);
 		assetManager.createMaterial(filename, shader, texture, glm::vec4(1.0f));
 
@@ -37,7 +39,10 @@ void Scene::loadGameObjects()
 		Material* material = assetManager.getMaterial(filename);
 
 		GameObject* go = new GameObject(mesh, material);
-		go->setPosition({ 0.0f, 0.0f, -50.0f });
+		float posX = Random::getRandom(-25.0f, 25.0f);
+		float posY = Random::getRandom(-25.0f, 25.0f);
+		float posZ = Random::getRandom(-75.0f, -50.0f);
+		go->setPosition({ posX, posY, posZ });
 		go->setScale({ 5.0f, 5.0f, 5.0f });
 		addGameObject(go);
 	}

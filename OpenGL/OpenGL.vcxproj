@@ -25,6 +25,7 @@
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\MeshData.cpp" />
     <ClCompile Include="src\PoolWorkerThread.cpp" />
+    <ClCompile Include="src\Random.cpp" />
     <ClCompile Include="src\SceneB.cpp" />
     <ClCompile Include="src\SceneC.cpp" />
     <ClCompile Include="src\SceneD.cpp" />
@@ -60,11 +61,13 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\IETThread.h" />
     <ClInclude Include="src\IFinishedTask.h" />
+    <ClInclude Include="src\ImGuiExtensions.h" />
     <ClInclude Include="src\IWorkerAction.h" />
     <ClInclude Include="src\Lightswitch.h" />
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\MeshData.h" />
     <ClInclude Include="src\PoolWorkerThread.h" />
+    <ClInclude Include="src\Random.h" />
     <ClInclude Include="src\SceneB.h" />
     <ClInclude Include="src\SceneC.h" />
     <ClInclude Include="src\SceneD.h" />

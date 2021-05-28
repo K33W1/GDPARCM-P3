@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "AssetManager.h"
 #include "SceneManager.h"
+#include "Random.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -123,24 +124,41 @@ void renderUI()
     unsigned int scene2 = tex2->getRendererID();
     unsigned int scene3 = tex3->getRendererID();
     unsigned int scene4 = tex4->getRendererID();
-	
-    ImGui::Begin("Control Panel");
+
+    int windowSizeX;
+    int windowSizeY;
+    glfwGetWindowSize(window, &windowSizeX, &windowSizeY);
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(windowSizeX, 192));
+    ImGui::Begin("Scene Viewer");
     if (ImGui::ImageButton((void*)(intptr_t)scene1, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
     {
         SceneManager::getInstance().loadSceneAsync(0);
     }
+    ImGui::SameLine(0, 32);
     if (ImGui::ImageButton((void*)(intptr_t)scene2, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
     {
         SceneManager::getInstance().loadSceneAsync(1);
     }
+    ImGui::SameLine(0, 32);
     if (ImGui::ImageButton((void*)(intptr_t)scene3, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
     {
         SceneManager::getInstance().loadSceneAsync(2);
     }
+    ImGui::SameLine(0, 32);
     if (ImGui::ImageButton((void*)(intptr_t)scene4, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0)))
     {
         SceneManager::getInstance().loadSceneAsync(3);
     }
+
+    ImGui::ProgressBar(0.1f, ImVec2(136, 16));
+    ImGui::SameLine(0, 32);
+    ImGui::ProgressBar(0.3f, ImVec2(136, 16));
+    ImGui::SameLine(0, 32);
+    ImGui::ProgressBar(0.8f, ImVec2(136, 16));
+    ImGui::SameLine(0, 32);
+    ImGui::ProgressBar(1.0f, ImVec2(136, 16));
+    
     ImGui::End();
 }
 
@@ -250,6 +268,8 @@ int main()
 	if (!initialize())
         return -1;
 
+    Random::seed(std::chrono::system_clock::now().time_since_epoch().count());
+	
     loadStartingAssets();
     loadStartingScene();
     run();
