@@ -26,8 +26,7 @@ public:
 
 	ThreadSafeVector<GameObject*>& getGameObjects();
 	SceneState getSceneState() const;
-	bool isLoaded();
-	float getPercentLoaded();
+	float getPercentLoaded() const;
 
 protected:
 	void addAsset(const std::string& assetName);

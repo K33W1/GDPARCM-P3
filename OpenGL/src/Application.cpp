@@ -165,6 +165,11 @@ void renderUI()
     {
         sceneManager.toggleScene(3);
     }
+    ImGui::SameLine(0, 32);
+    if (ImGui::Button("View All", ImVec2(128, 128)))
+    {
+        sceneManager.loadAllScenesAsync();
+    }
 
     float progress1 = sceneManager.getScene(0)->getPercentLoaded();
     float progress2 = sceneManager.getScene(1)->getPercentLoaded();

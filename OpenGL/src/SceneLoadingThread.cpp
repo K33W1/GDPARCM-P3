@@ -10,4 +10,5 @@ SceneLoadingThread::SceneLoadingThread(int sceneIndex)
 void SceneLoadingThread::run()
 {
 	SceneManager::getInstance().loadScene(sceneIndex);
+	delete this;
 }

@@ -93,12 +93,7 @@ SceneState Scene::getSceneState() const
 	return sceneState;
 }
 
-bool Scene::isLoaded()
-{
-	return gameObjects.size() == assets.size();
-}
-
-float Scene::getPercentLoaded()
+float Scene::getPercentLoaded() const
 {
 	return (float)assetsLoaded / (assets.size() * 2);
 }

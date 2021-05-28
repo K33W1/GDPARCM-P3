@@ -18,6 +18,7 @@ public:
 	void toggleScene(int index);
 	void loadScene(int index);
 	void loadSceneAsync(int index);
+	void loadAllScenesAsync();
 	void unloadScene(int index);
 	void unloadSceneAsync(int index);
 
@@ -27,8 +28,7 @@ public:
 private:
 	SceneManager() = default;
 	~SceneManager() override = default;
-
-	ThreadSafeVector<SceneLoadingThread*> sceneLoadingThreads;
+	
 	ThreadSafeVector<Scene*> newLoadedScenes;
 	std::vector<Scene*> activeScenes;
 	std::vector<Scene*> allScenes;

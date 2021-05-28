@@ -13,10 +13,6 @@ void SceneManager::initialize()
 	allScenes.push_back(new SceneB());
 	allScenes.push_back(new SceneC());
 	allScenes.push_back(new SceneD());
-	sceneLoadingThreads.push_back(nullptr);
-	sceneLoadingThreads.push_back(nullptr);
-	sceneLoadingThreads.push_back(nullptr);
-	sceneLoadingThreads.push_back(nullptr);
 }
 
 void SceneManager::loadScene(int index)
@@ -37,8 +33,18 @@ void SceneManager::loadScene(int index)
 
 void SceneManager::loadSceneAsync(int index)
 {
-	SceneLoadingThread* thread = new SceneLoadingThread(index);
-	sceneLoadingThreads[index] = thread;
+	new SceneLoadingThread(index);
+}
+
+void SceneManager::loadAllScenesAsync()
+{
+	for (int i = 0; i < allScenes.size(); i++)
+	{
+		if (allScenes[i]->getSceneState() == SceneState::Inactive)
+		{
+			new SceneLoadingThread(i);
+		}
+	}
 }
 
 void SceneManager::unloadScene(int index)
