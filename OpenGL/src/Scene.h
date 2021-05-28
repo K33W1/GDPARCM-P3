@@ -5,22 +5,30 @@
 
 class GameObject;
 
+enum class SceneState
+{
+	Active,
+	Inactive,
+	Loading,
+	Unloading
+};
+
 class Scene
 {
 public:
-	Scene() = default;
+	Scene();
 	virtual ~Scene() = default;
 
 	void loadAssets();
 	void loadGameObjects();
 	
-	void unloadGameObjects();
-	void unloadAssets();
+	void unloadAssetsAndGameObjects();
 
 	void manualSharedLockGameObjects();
 	void manualSharedUnlockGameObjects();
 	
 	ThreadSafeVector<GameObject*>& getGameObjects();
+	SceneState getSceneState() const;
 	bool isLoaded();
 	float getPercentLoaded();
 
@@ -30,5 +38,6 @@ protected:
 private:
 	ThreadSafeVector<std::string> assets;
 	ThreadSafeVector<GameObject*> gameObjects;
+	SceneState sceneState;
 	int assetsLoaded;
 };

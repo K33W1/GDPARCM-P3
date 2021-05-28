@@ -26,7 +26,7 @@ void SceneManager::loadScene(int index)
 	
 	if (sceneItr != activeScenes.end())
 	{
-		std::cout << "Tried to load an already loaded scene!";
+		std::cout << "Tried to load an already loaded scene!\n";
 		return;
 	}
 	
@@ -48,18 +48,19 @@ void SceneManager::unloadScene(int index)
 	
 	if (sceneItr == activeScenes.end())
 	{
-		std::cout << "Tried to unload an already unloaded scene!";
+		std::cout << "Tried to unload an already unloaded scene!\n";
 		return;
 	}
 
 	activeScenes.erase(sceneItr);
 	
-	scene->unloadGameObjects();
-	scene->unloadAssets();
+	scene->unloadAssetsAndGameObjects();
 }
 
-// TODO: Toggle scene
-// TODO: Unload scene async
+void SceneManager::unloadSceneAsync(int index)
+{
+	
+}
 
 Scene* SceneManager::getScene(int index) const
 {
@@ -75,6 +76,21 @@ void SceneManager::instantiateNewLoadedScenes()
 	}
 
 	newLoadedScenes.clear();
+}
+
+void SceneManager::toggleScene(int index)
+{
+	SceneState sceneState = allScenes[index]->getSceneState();
+	
+	if (sceneState == SceneState::Inactive)
+	{
+		loadSceneAsync(index);
+	}
+	else if (sceneState == SceneState::Active)
+	{
+		unloadScene(index);
+		//unloadSceneAsync(index);
+	}
 }
 
 const std::vector<Scene*>& SceneManager::getActiveScenes()

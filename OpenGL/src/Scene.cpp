@@ -2,18 +2,33 @@
 #include "AssetManager.h"
 #include "GameObject.h"
 #include "Random.h"
+#include <iostream>
+
+Scene::Scene()
+	: sceneState(SceneState::Inactive), assetsLoaded(0)
+{
+	
+}
 
 void Scene::loadAssets()
 {
-	AssetManager& assetManager = AssetManager::getInstance();
+	if (sceneState != SceneState::Inactive)
+	{
+		std::cerr << "Error: Scene is not in valid state to be loaded!\n";
+		return;
+	}
 
+	sceneState = SceneState::Loading;
+	
 	for (std::string filename : assets)
 	{
-		assetManager.loadTextureFile(filename);
+		AssetManager::getInstance().loadTextureFile(filename);
 		assetsLoaded++;
-		assetManager.loadMeshFile(filename);
+		AssetManager::getInstance().loadMeshFile(filename);
 		assetsLoaded++;
 	}
+	
+	sceneState = SceneState::Active;
 }
 
 void Scene::loadGameObjects()
@@ -39,19 +54,33 @@ void Scene::loadGameObjects()
 	}
 }
 
-void Scene::unloadGameObjects()
+void Scene::unloadAssetsAndGameObjects()
 {
+	if (sceneState != SceneState::Active)
+	{
+		std::cerr << "Error: Scene is not in valid state to be unloaded!\n";
+		return;
+	}
+
+	sceneState = SceneState::Unloading;
+
+	for (std::string filename : assets)
+	{
+		AssetManager::getInstance().unloadTexture(filename);
+		assetsLoaded--;
+		AssetManager::getInstance().unloadMesh(filename);
+		assetsLoaded--;
+		AssetManager::getInstance().unloadMaterial(filename);
+	}
+
 	for (const GameObject* const gameObject : gameObjects)
 	{
 		delete gameObject;
 	}
 
 	gameObjects.clear();
-}
-
-void Scene::unloadAssets()
-{
-	assetsLoaded = 0;
+	
+	sceneState = SceneState::Inactive;
 }
 
 void Scene::manualSharedLockGameObjects()
@@ -67,6 +96,11 @@ void Scene::manualSharedUnlockGameObjects()
 ThreadSafeVector<GameObject*>& Scene::getGameObjects()
 {
 	return gameObjects;
+}
+
+SceneState Scene::getSceneState() const
+{
+	return sceneState;
 }
 
 bool Scene::isLoaded()

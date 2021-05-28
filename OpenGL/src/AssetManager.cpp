@@ -76,9 +76,30 @@ void AssetManager::loadTextureFile(const std::string& filename)
 	texturesToGenerate.push_back({ filepath, width, height, BPP, buffer });
 }
 
-void AssetManager::loadShaderFile(const std::string& filepath)
+void AssetManager::loadShaderFile(const std::string& filename)
 {
-	shaders.emplace(getFileName(filepath), new Shader(filepath));
+	shaders.insert(getFileName(filename), new Shader(filename));
+}
+
+void AssetManager::unloadMesh(const std::string& filename)
+{
+	Mesh* const mesh = meshes[filename];
+	meshes.remove(filename);
+	delete mesh;
+}
+
+void AssetManager::unloadTexture(const std::string& filename)
+{
+	Texture* const texture = textures[filename];
+	textures.remove(filename);
+	delete texture;
+}
+
+void AssetManager::unloadMaterial(const std::string& filename)
+{
+	Material* const material = materials[filename];
+	materials.remove(filename);
+	delete material;
 }
 
 void AssetManager::instantiateNewLoadedMeshes()
@@ -99,7 +120,7 @@ void AssetManager::instantiateNewLoadedMeshes()
 		layout->push<float>(2);
 		va->setBuffer(vb, layout);
 
-		meshes.emplace(fileName, new Mesh(va, ib));
+		meshes.insert(fileName, new Mesh(va, ib));
 
 		std::cout << "Added mesh: " << fileName << '\n';
 	}
@@ -120,7 +141,7 @@ void AssetManager::generateNewLoadedTextures()
 		int BPP = textureData.getBPP();
 		unsigned char* buffer = textureData.getBuffer();
 
-		textures.emplace(getFileName(filepath), new Texture(filepath, width, height, BPP, buffer));
+		textures.insert(getFileName(filepath), new Texture(filepath, width, height, BPP, buffer));
 	}
 
 	texturesToGenerate.manualPriorityUnlock();
@@ -153,12 +174,12 @@ void AssetManager::loadPrimitiveMeshes()
 
 	Mesh* quad = new Mesh(va, ib);
 	
-	meshes.emplace("quad", quad);
+	meshes.insert("quad", quad);
 }
 
 void AssetManager::createMaterial(const std::string& name, Shader* shader, Texture* texture, const glm::vec4& color)
 {
-	materials.emplace(name, new Material(shader, texture, color));
+	materials.insert(name, new Material(shader, texture, color));
 }
 
 std::string AssetManager::getFileName(const std::string& name)

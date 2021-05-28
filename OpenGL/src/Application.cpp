@@ -128,10 +128,12 @@ void renderUI()
     glfwGetWindowSize(window, &windowSizeX, &windowSizeY);
     ImVec2 buttonUv0 = ImVec2(0, 1);
     ImVec2 buttonUv1 = ImVec2(1, 0);
+	
     Texture* tex1 = AssetManager::getInstance().getTexture("pepe_kid_sad");
     Texture* tex2 = AssetManager::getInstance().getTexture("pepe_kid_celebrate");
     Texture* tex3 = AssetManager::getInstance().getTexture("pepe_nervous");
     Texture* tex4 = AssetManager::getInstance().getTexture("pepe_celebrate");
+	
     unsigned int tex1Id = tex1->getRendererID();
     unsigned int tex2Id = tex2->getRendererID();
     unsigned int tex3Id = tex3->getRendererID();
@@ -142,22 +144,22 @@ void renderUI()
     ImGui::Begin("Scene Viewer");
     if (ImGui::ImageButton((void*)(intptr_t)tex1Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        sceneManager.loadSceneAsync(0);
+        sceneManager.toggleScene(0);
     }
     ImGui::SameLine(0, 32);
     if (ImGui::ImageButton((void*)(intptr_t)tex2Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        sceneManager.loadSceneAsync(1);
+        sceneManager.toggleScene(1);
     }
     ImGui::SameLine(0, 32);
     if (ImGui::ImageButton((void*)(intptr_t)tex3Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        sceneManager.loadSceneAsync(2);
+        sceneManager.toggleScene(2);
     }
     ImGui::SameLine(0, 32);
     if (ImGui::ImageButton((void*)(intptr_t)tex4Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        sceneManager.loadSceneAsync(3);
+        sceneManager.toggleScene(3);
     }
 
     float progress1 = sceneManager.getScene(0)->getPercentLoaded();
@@ -178,27 +180,11 @@ void renderUI()
 
 void processInput(GLFWwindow* window)
 {
+	// Exit
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
-    }
-
-	// Unload scenes
-    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
-    {
-        SceneManager::getInstance().unloadScene(0);
-    }
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-    {
-        SceneManager::getInstance().unloadScene(1);
-    }
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-    {
-        SceneManager::getInstance().unloadScene(2);
-    }
-    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-    {
-        SceneManager::getInstance().unloadScene(3);
+        return;
     }
 
 	// Camera

@@ -15,9 +15,11 @@ public:
 
 	void instantiateNewLoadedScenes();
 
+	void toggleScene(int index);
 	void loadScene(int index);
 	void loadSceneAsync(int index);
 	void unloadScene(int index);
+	void unloadSceneAsync(int index);
 
 	Scene* getScene(int index) const;
 	const std::vector<Scene*>& getActiveScenes();

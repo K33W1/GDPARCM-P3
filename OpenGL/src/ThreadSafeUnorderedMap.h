@@ -13,7 +13,6 @@ public:
 	void manual_unlock();
 	
 	void insert(const Key& key, const Value& value);
-	void emplace(const Key& key, const Value& value);
 	void remove(const Key& key);
 	void clear();
 
@@ -48,14 +47,6 @@ void ThreadSafeUnorderedMap<Key, Value>::insert(const Key& key, const Value& val
 {
 	lightswitch.priorityLock();
 	unorderedMap.insert({ key, value });
-	lightswitch.priorityUnlock();
-}
-
-template <typename Key, typename Value>
-void ThreadSafeUnorderedMap<Key, Value>::emplace(const Key& key, const Value& value)
-{
-	lightswitch.priorityLock();
-	unorderedMap.emplace(key, value);
 	lightswitch.priorityUnlock();
 }
 

@@ -21,8 +21,11 @@ public:
 	void initialize();
 
 	void loadMeshFile(const std::string& filename);
-	void loadTextureFile(const std::string& filepath);
-	void loadShaderFile(const std::string& filepath);
+	void loadTextureFile(const std::string& filename);
+	void loadShaderFile(const std::string& filename);
+	void unloadMesh(const std::string& filename);
+	void unloadTexture(const std::string& filename);
+	void unloadMaterial(const std::string& filename);
 
 	void createMaterial(const std::string& name, Shader* shader, Texture* texture, const glm::vec4& color);
 
