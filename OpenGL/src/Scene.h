@@ -7,8 +7,9 @@ class GameObject;
 
 enum class SceneState
 {
-	Active,
-	Inactive,
+	Enabled,
+	Disabled,
+	Unloaded,
 	Loading,
 	Unloading
 };
@@ -21,9 +22,11 @@ public:
 
 	void loadAssets();
 	void loadGameObjects();
-	
 	void unloadAssetsAndGameObjects();
 
+	void enable();
+	void disable();
+	
 	ThreadSafeVector<GameObject*>& getGameObjects();
 	SceneState getSceneState() const;
 	float getPercentLoaded() const;

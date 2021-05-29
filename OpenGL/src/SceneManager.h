@@ -13,28 +13,33 @@ class SceneManager : public Singleton<SceneManager>
 public:
 	void initialize();
 
-	void toggleScene(int index);
-	void loadSceneAsMain(int index);
-	void loadScene(int index);
-	void loadScene(Scene* scene);
-	void loadSceneAsync(int index);
-	void loadSceneAsMainAsync(int index);
-	void loadAllScenesAsync();
+	void switchToScene(int index);
+	void loadScene(int index, bool loadAsEnabled);
+	void loadScene(Scene* scene, bool loadAsEnabled);
+	void loadSceneAsync(int index, bool loadAsEnabled);
+	void loadAllScenesAsync(bool loadAsEnabled);
 	void unloadScene(int index);
 	void unloadSceneAsync(int index);
 	
 	void instantiateNewLoadedScenes();
 
 	Scene* getScene(int index) const;
-	Scene* getMainScene() const;
-	const std::vector<Scene*>& getActiveScenes();
+	Scene* getMainLoadingScene();
+	const std::vector<Scene*>& getEnabledScenes() const;
+
+	void deleteSceneLoadingThread(SceneLoadingThread* thread);
 
 private:
 	SceneManager() = default;
 	~SceneManager() override = default;
-	
-	ThreadSafeVector<Scene*> newLoadedScenes;
-	std::vector<Scene*> activeScenes;
+
+	void enableScene(Scene* scene);
+	void disableScene(Scene* scene);
+
+	ThreadSafeVector<SceneLoadingThread*> sceneLoadingThreads;
+	ThreadSafeVector<Scene*> newLoadedScenesAsEnabled;
+	ThreadSafeVector<Scene*> newLoadedScenesAsDisabled;
+	std::vector<Scene*> enabledScenes;
+	std::vector<Scene*> disabledScenes;
 	std::vector<Scene*> allScenes;
-	Scene* mainLoadingScene;
 };

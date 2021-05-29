@@ -93,22 +93,23 @@ void loadStartingAssets()
     AssetManager::getInstance().loadTextureFile("pepe_kid_celebrate");
     AssetManager::getInstance().loadTextureFile("pepe_nervous");
     AssetManager::getInstance().loadTextureFile("pepe_celebrate");
+    AssetManager::getInstance().loadTextureFile("xbutton");
 }
 
 void loadStartingScene()
 {
     SceneManager::getInstance().initialize();
-    SceneManager::getInstance().loadSceneAsync(0);
-    SceneManager::getInstance().loadSceneAsync(1);
-    SceneManager::getInstance().loadSceneAsync(2);
-    SceneManager::getInstance().loadSceneAsync(3);
+    SceneManager::getInstance().loadSceneAsync(0, false);
+    SceneManager::getInstance().loadSceneAsync(1, false);
+    SceneManager::getInstance().loadSceneAsync(2, false);
+    SceneManager::getInstance().loadSceneAsync(3, false);
 }
 
 void renderGameObjects()
 {
     glm::mat4 viewProj = camera.getProjectionMatrix() * camera.getViewMatrix();
 
-    for (Scene* scene : SceneManager::getInstance().getActiveScenes())
+    for (Scene* scene : SceneManager::getInstance().getEnabledScenes())
     {
         for (GameObject* gameObject : scene->getGameObjects())
         {
@@ -139,83 +140,131 @@ void renderUI()
     Texture* tex2 = AssetManager::getInstance().getTexture("pepe_kid_celebrate");
     Texture* tex3 = AssetManager::getInstance().getTexture("pepe_nervous");
     Texture* tex4 = AssetManager::getInstance().getTexture("pepe_celebrate");
+    Texture* xtex = AssetManager::getInstance().getTexture("xbutton");
 	
     unsigned int tex1Id = tex1->getRendererID();
     unsigned int tex2Id = tex2->getRendererID();
     unsigned int tex3Id = tex3->getRendererID();
     unsigned int tex4Id = tex4->getRendererID();
+    unsigned int xtexId = xtex->getRendererID();
 	
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(glfwWindowSizeX, 192));
     ImGui::Begin("Scene Viewer");
     if (ImGui::ImageButton((void*)(intptr_t)tex1Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        sceneManager.toggleScene(0);
+        sceneManager.switchToScene(0);
     }
     ImGui::SameLine(0, 32);
     if (ImGui::ImageButton((void*)(intptr_t)tex2Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        sceneManager.toggleScene(1);
+        sceneManager.switchToScene(1);
     }
     ImGui::SameLine(0, 32);
     if (ImGui::ImageButton((void*)(intptr_t)tex3Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        sceneManager.toggleScene(2);
+        sceneManager.switchToScene(2);
     }
     ImGui::SameLine(0, 32);
     if (ImGui::ImageButton((void*)(intptr_t)tex4Id, ImVec2(128, 128), buttonUv0, buttonUv1))
     {
-        sceneManager.toggleScene(3);
+        sceneManager.switchToScene(3);
     }
     ImGui::SameLine(0, 32);
     if (ImGui::Button("View All", ImVec2(128, 128)))
     {
-        sceneManager.loadAllScenesAsync();
+        sceneManager.loadAllScenesAsync(true);
     }
 
+	// Display loading bars or X buttons
+    Scene* scene1 = sceneManager.getScene(0);
+    Scene* scene2 = sceneManager.getScene(1);
+    Scene* scene3 = sceneManager.getScene(2);
+    Scene* scene4 = sceneManager.getScene(3);
+    float progress1 = scene1->getPercentLoaded();
+    float progress2 = scene2->getPercentLoaded();
+    float progress3 = scene3->getPercentLoaded();
+    float progress4 = scene4->getPercentLoaded();
     const ImVec2 progressBarSize = ImVec2(136, 16);
-    float progress1 = sceneManager.getScene(0)->getPercentLoaded();
-    float progress2 = sceneManager.getScene(1)->getPercentLoaded();
-    float progress3 = sceneManager.getScene(2)->getPercentLoaded();
-    float progress4 = sceneManager.getScene(3)->getPercentLoaded();
+    const ImVec2 xButtonSize = ImVec2(128, 16);
 
-    if (sceneManager.getScene(0)->getSceneState() == SceneState::Loading)
-	{
-		ImGui::ProgressBar(progress1, progressBarSize);
-    }
-    else
+    if (scene1->getSceneState() == SceneState::Unloaded)
     {
         ImGui::Dummy(progressBarSize);
     }
+    else if (scene1->getSceneState() == SceneState::Loading)
+    {
+        ImGui::ProgressBar(progress1, progressBarSize);
+    }
+    else if (scene1->getSceneState() == SceneState::Disabled || scene1->getSceneState() == SceneState::Enabled)
+    {
+        ImGui::PushID("UnloadButton1");
+        if (ImGui::ImageButton((void*)(intptr_t)xtexId, xButtonSize, buttonUv0, buttonUv1))
+        {
+            SceneManager::getInstance().unloadSceneAsync(0);
+        }
+        ImGui::PopID();
+    }
     ImGui::SameLine(0, 32);
-    if (sceneManager.getScene(1)->getSceneState() == SceneState::Loading)
+    if (scene2->getSceneState() == SceneState::Unloaded)
+    {
+        ImGui::Dummy(progressBarSize);
+    }
+    else if (scene2->getSceneState() == SceneState::Loading)
 	{
 		ImGui::ProgressBar(progress2, progressBarSize);
     }
-    else
+    else if(scene2->getSceneState() == SceneState::Disabled || scene2->getSceneState() == SceneState::Enabled)
+    {
+        ImGui::PushID("UnloadButton2");
+        if (ImGui::ImageButton((void*)(intptr_t)xtexId, xButtonSize, buttonUv0, buttonUv1))
+        {
+            SceneManager::getInstance().unloadSceneAsync(1);
+        }
+        ImGui::PopID();
+    }
+    ImGui::SameLine(0, 32);
+    if (scene3->getSceneState() == SceneState::Unloaded)
     {
         ImGui::Dummy(progressBarSize);
     }
-    ImGui::SameLine(0, 32);
-    if (sceneManager.getScene(2)->getSceneState() == SceneState::Loading)
-	{
-		ImGui::ProgressBar(progress3, progressBarSize);
+    else if (scene3->getSceneState() == SceneState::Loading)
+    {
+        ImGui::ProgressBar(progress3, progressBarSize);
     }
-    else
+    else if (scene3->getSceneState() == SceneState::Disabled || scene3->getSceneState() == SceneState::Enabled)
+    {
+        ImGui::PushID("UnloadButton3");
+        if (ImGui::ImageButton((void*)(intptr_t)xtexId, xButtonSize, buttonUv0, buttonUv1))
+        {
+            SceneManager::getInstance().unloadSceneAsync(2);
+        }
+        ImGui::PopID();
+    }
+    ImGui::SameLine(0, 32);
+    if (scene4->getSceneState() == SceneState::Unloaded)
     {
         ImGui::Dummy(progressBarSize);
     }
-    ImGui::SameLine(0, 32);
-    if (sceneManager.getScene(3)->getSceneState() == SceneState::Loading)
-	{
-		ImGui::ProgressBar(progress4, progressBarSize);
+    else if (scene4->getSceneState() == SceneState::Loading)
+    {
+        ImGui::ProgressBar(progress4, progressBarSize);
+    }
+    else if (scene4->getSceneState() == SceneState::Disabled || scene4->getSceneState() == SceneState::Enabled)
+    {
+        ImGui::PushID("UnloadButton4");
+        if (ImGui::ImageButton((void*)(intptr_t)xtexId, xButtonSize, buttonUv0, buttonUv1))
+        {
+            SceneManager::getInstance().unloadSceneAsync(3);
+        }
+        ImGui::PopID();
     }
     
     ImGui::End();
 
-    if (sceneManager.getMainScene() != nullptr && sceneManager.getMainScene()->getSceneState() == SceneState::Loading)
+    if (sceneManager.getMainLoadingScene() != nullptr && sceneManager.getMainLoadingScene()->getSceneState() == SceneState::Loading)
     {
-        float mainScenePercentLoaded = sceneManager.getMainScene()->getPercentLoaded();
+        float mainScenePercentLoaded = sceneManager.getMainLoadingScene()->getPercentLoaded();
 
         ImVec2 glfwWindowSize(glfwWindowSizeX / 2, glfwWindowSizeY / 2);
         ImVec2 loadingBarSize(256.0f, 16.0f);
@@ -306,7 +355,7 @@ void scrollCallback(GLFWwindow* window, double offsetX, double offsetY)
 
 void update()
 {
-    for (Scene* scene : SceneManager::getInstance().getActiveScenes())
+    for (Scene* scene : SceneManager::getInstance().getEnabledScenes())
     {
         for (GameObject* gameObject : scene->getGameObjects())
         {

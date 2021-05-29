@@ -120,9 +120,6 @@
     <ClCompile Include="src\SceneLoadingThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MainSceneLoadingThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\textured.shader" />
@@ -246,9 +243,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneLoadingThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MainSceneLoadingThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

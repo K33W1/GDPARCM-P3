@@ -58,8 +58,6 @@ void AssetManager::loadMeshFile(const std::string& filename)
 			vertexData.push_back(mesh.texcoords[2 * i + 1]);
 		}
 
-		std::cout << "Loaded mesh: " << filepath << '\n';
-		
 		meshesToInstantiate.push_back({ filepath, vertexData, mesh.indices });
 
 		break; // Load only the first submesh
@@ -124,9 +122,7 @@ void AssetManager::instantiateNewLoadedMeshes()
 
 		meshes.insert(fileName, new Mesh(va, ib));
 
-		// delete layout;
-		
-		std::cout << "Added mesh: " << fileName << '\n';
+		delete layout;
 	}
 	
 	meshesToInstantiate.clearNoLock();

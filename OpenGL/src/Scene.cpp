@@ -5,16 +5,16 @@
 #include <iostream>
 
 Scene::Scene()
-	: sceneState(SceneState::Inactive), assetsLoaded(0)
+	: sceneState(SceneState::Unloaded), assetsLoaded(0)
 {
 	
 }
 
 void Scene::loadAssets()
 {
-	if (sceneState != SceneState::Inactive)
+	if (sceneState != SceneState::Unloaded)
 	{
-		std::cerr << "Error: Scene is not in valid state to be loaded!\n";
+		std::cerr << "Error: Scene is in an invalid state to be loaded!\n";
 		return;
 	}
 
@@ -31,6 +31,12 @@ void Scene::loadAssets()
 
 void Scene::loadGameObjects()
 {
+	if (sceneState != SceneState::Loading)
+	{
+		std::cerr << "Error: Scene is loading GameObjects without assets loaded!\n";
+		return;
+	}
+
 	AssetManager& assetManager = AssetManager::getInstance();
 	Shader* shader = assetManager.getShader("textured");
 
@@ -50,19 +56,22 @@ void Scene::loadGameObjects()
 		go->setScale({ 5.0f, 5.0f, 5.0f });
 		gameObjects.push_back(go);
 	}
-
-	sceneState = SceneState::Active;
 }
 
 void Scene::unloadAssetsAndGameObjects()
 {
-	if (sceneState != SceneState::Active)
+	if (sceneState != SceneState::Enabled && sceneState != SceneState::Disabled)
 	{
 		std::cerr << "Error: Scene is not in valid state to be unloaded!\n";
 		return;
 	}
 
 	sceneState = SceneState::Unloading;
+
+	for (const GameObject* const gameObject : gameObjects)
+	{
+		delete gameObject;
+	}
 
 	for (std::string filename : assets)
 	{
@@ -73,14 +82,19 @@ void Scene::unloadAssetsAndGameObjects()
 		AssetManager::getInstance().unloadMaterial(filename);
 	}
 
-	for (const GameObject* const gameObject : gameObjects)
-	{
-		delete gameObject;
-	}
-
 	gameObjects.clear();
 	
-	sceneState = SceneState::Inactive;
+	sceneState = SceneState::Unloaded;
+}
+
+void Scene::enable()
+{
+	sceneState = SceneState::Enabled;
+}
+
+void Scene::disable()
+{
+	sceneState = SceneState::Disabled;
 }
 
 ThreadSafeVector<GameObject*>& Scene::getGameObjects()
