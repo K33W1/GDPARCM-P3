@@ -127,14 +127,19 @@ void renderGameObjects()
 void renderUI()
 {
     SceneManager& sceneManager = SceneManager::getInstance();
+    Scene* scene1 = sceneManager.getScene(0);
+    Scene* scene2 = sceneManager.getScene(1);
+    Scene* scene3 = sceneManager.getScene(2);
+    Scene* scene4 = sceneManager.getScene(3);
 	
     int glfwWindowSizeX;
     int glfwWindowSizeY;
     glfwGetWindowSize(window, &glfwWindowSizeX, &glfwWindowSizeY);
     ImVec2 buttonUv0 = ImVec2(0, 1);
     ImVec2 buttonUv1 = ImVec2(1, 0);
-    // ImVec4 buttonBgColor = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    // ImVec4 buttonTint = ImVec4(0.5f, 0.5f, 0.5f, 0.5f);
+    ImVec4 buttonBgColor = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    ImVec4 buttonSceneDisabledTint = ImVec4(0.5f, 0.5f, 0.5f, 0.5f);
+    ImVec4 buttonSceneEnabledTint = ImVec4(0.75f, 0.9f, 0.75f, 0.75f);
 	
     Texture* tex1 = AssetManager::getInstance().getTexture("pepe_kid_sad");
     Texture* tex2 = AssetManager::getInstance().getTexture("pepe_kid_celebrate");
@@ -151,22 +156,22 @@ void renderUI()
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(glfwWindowSizeX, 192));
     ImGui::Begin("Scene Viewer");
-    if (ImGui::ImageButton((void*)(intptr_t)tex1Id, ImVec2(128, 128), buttonUv0, buttonUv1))
+    if (ImGui::ImageButton((void*)(intptr_t)tex1Id, ImVec2(128, 128), buttonUv0, buttonUv1, -1, buttonBgColor, scene1->getSceneState() == SceneState::Enabled ? buttonSceneEnabledTint : buttonSceneDisabledTint))
     {
         sceneManager.switchToScene(0);
     }
     ImGui::SameLine(0, 32);
-    if (ImGui::ImageButton((void*)(intptr_t)tex2Id, ImVec2(128, 128), buttonUv0, buttonUv1))
+    if (ImGui::ImageButton((void*)(intptr_t)tex2Id, ImVec2(128, 128), buttonUv0, buttonUv1, -1, buttonBgColor, scene2->getSceneState() == SceneState::Enabled ? buttonSceneEnabledTint : buttonSceneDisabledTint))
     {
         sceneManager.switchToScene(1);
     }
     ImGui::SameLine(0, 32);
-    if (ImGui::ImageButton((void*)(intptr_t)tex3Id, ImVec2(128, 128), buttonUv0, buttonUv1))
+    if (ImGui::ImageButton((void*)(intptr_t)tex3Id, ImVec2(128, 128), buttonUv0, buttonUv1, -1, buttonBgColor, scene3->getSceneState() == SceneState::Enabled ? buttonSceneEnabledTint : buttonSceneDisabledTint))
     {
         sceneManager.switchToScene(2);
     }
     ImGui::SameLine(0, 32);
-    if (ImGui::ImageButton((void*)(intptr_t)tex4Id, ImVec2(128, 128), buttonUv0, buttonUv1))
+    if (ImGui::ImageButton((void*)(intptr_t)tex4Id, ImVec2(128, 128), buttonUv0, buttonUv1, -1, buttonBgColor, scene4->getSceneState() == SceneState::Enabled ? buttonSceneEnabledTint : buttonSceneDisabledTint))
     {
         sceneManager.switchToScene(3);
     }
@@ -177,10 +182,6 @@ void renderUI()
     }
 
 	// Display loading bars or X buttons
-    Scene* scene1 = sceneManager.getScene(0);
-    Scene* scene2 = sceneManager.getScene(1);
-    Scene* scene3 = sceneManager.getScene(2);
-    Scene* scene4 = sceneManager.getScene(3);
     float progress1 = scene1->getPercentLoaded();
     float progress2 = scene2->getPercentLoaded();
     float progress3 = scene3->getPercentLoaded();
