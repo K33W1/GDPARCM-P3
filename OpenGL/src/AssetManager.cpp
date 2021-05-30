@@ -175,6 +175,8 @@ void AssetManager::loadPrimitiveMeshes()
 	Mesh* quad = new Mesh(va, ib);
 	
 	meshes.insert("quad", quad);
+
+	delete layout;
 }
 
 void AssetManager::createMaterial(const std::string& name, Shader* shader, Texture* texture, const glm::vec4& color)

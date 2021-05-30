@@ -3,6 +3,7 @@
 #include "ThreadSafeVector.h"
 #include <vector>
 
+class SceneUnloadingThread;
 class Scene;
 class SceneLoadingThread;
 
@@ -28,6 +29,7 @@ public:
 	const std::vector<Scene*>& getEnabledScenes() const;
 
 	void deleteSceneLoadingThread(SceneLoadingThread* thread);
+	void deleteSceneUnloadingThread(SceneUnloadingThread* thread);
 
 private:
 	SceneManager() = default;
@@ -37,6 +39,7 @@ private:
 	void disableScene(Scene* scene);
 
 	ThreadSafeVector<SceneLoadingThread*> sceneLoadingThreads;
+	ThreadSafeVector<SceneUnloadingThread*> sceneUnloadingThreads;
 	ThreadSafeVector<Scene*> newLoadedScenesAsEnabled;
 	ThreadSafeVector<Scene*> newLoadedScenesAsDisabled;
 	std::vector<Scene*> enabledScenes;

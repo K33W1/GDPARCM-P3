@@ -1,5 +1,4 @@
 #include "SceneLoadingThread.h"
-#include "Scene.h"
 #include "SceneManager.h"
 
 SceneLoadingThread::SceneLoadingThread(int sceneIndex, bool isEnabledOnLoad)
@@ -11,7 +10,6 @@ SceneLoadingThread::SceneLoadingThread(int sceneIndex, bool isEnabledOnLoad)
 void SceneLoadingThread::run()
 {
 	SceneManager::getInstance().loadScene(sceneIndex, isEnabledOnLoad);
-
 	SceneManager::getInstance().deleteSceneLoadingThread(this);
 	delete this;
 }

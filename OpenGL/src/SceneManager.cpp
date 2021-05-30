@@ -7,6 +7,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include "SceneUnloadingThread.h"
+
 void SceneManager::initialize()
 {
 	allScenes.push_back(new SceneA());
@@ -92,8 +94,7 @@ void SceneManager::unloadScene(int index)
 
 void SceneManager::unloadSceneAsync(int index)
 {
-	// TODO: Make it async
-	unloadScene(index);
+	sceneUnloadingThreads.push_back(new SceneUnloadingThread(index));
 }
 
 void SceneManager::switchToScene(int index)
@@ -178,6 +179,11 @@ const std::vector<Scene*>& SceneManager::getEnabledScenes() const
 void SceneManager::deleteSceneLoadingThread(SceneLoadingThread* thread)
 {
 	sceneLoadingThreads.remove(thread);
+}
+
+void SceneManager::deleteSceneUnloadingThread(SceneUnloadingThread* thread)
+{
+	sceneUnloadingThreads.remove(thread);
 }
 
 void SceneManager::enableScene(Scene* scene)
