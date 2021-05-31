@@ -89,10 +89,11 @@ bool initialize()
 void loadStartingAssets()
 {
     AssetManager::getInstance().initialize();
-    AssetManager::getInstance().loadTextureFile("pepe_kid_sad");
-    AssetManager::getInstance().loadTextureFile("pepe_kid_celebrate");
-    AssetManager::getInstance().loadTextureFile("pepe_nervous");
-    AssetManager::getInstance().loadTextureFile("pepe_celebrate");
+    AssetManager::getInstance().loadTextureFile("scene_1");
+    AssetManager::getInstance().loadTextureFile("scene_2");
+    AssetManager::getInstance().loadTextureFile("scene_3");
+    AssetManager::getInstance().loadTextureFile("scene_4");
+    AssetManager::getInstance().loadTextureFile("scene_5");
     AssetManager::getInstance().loadTextureFile("xbutton");
 }
 
@@ -103,6 +104,7 @@ void loadStartingScene()
     SceneManager::getInstance().loadSceneAsync(1, false);
     SceneManager::getInstance().loadSceneAsync(2, false);
     SceneManager::getInstance().loadSceneAsync(3, false);
+    SceneManager::getInstance().loadSceneAsync(4, false);
 }
 
 void renderGameObjects()
@@ -131,6 +133,7 @@ void renderUI()
     Scene* scene2 = sceneManager.getScene(1);
     Scene* scene3 = sceneManager.getScene(2);
     Scene* scene4 = sceneManager.getScene(3);
+    Scene* scene5 = sceneManager.getScene(4);
 	
     int glfwWindowSizeX;
     int glfwWindowSizeY;
@@ -141,16 +144,18 @@ void renderUI()
     ImVec4 buttonSceneDisabledTint = ImVec4(0.5f, 0.5f, 0.5f, 0.5f);
     ImVec4 buttonSceneEnabledTint = ImVec4(0.75f, 0.9f, 0.75f, 0.75f);
 	
-    Texture* tex1 = AssetManager::getInstance().getTexture("pepe_kid_sad");
-    Texture* tex2 = AssetManager::getInstance().getTexture("pepe_kid_celebrate");
-    Texture* tex3 = AssetManager::getInstance().getTexture("pepe_nervous");
-    Texture* tex4 = AssetManager::getInstance().getTexture("pepe_celebrate");
+    Texture* tex1 = AssetManager::getInstance().getTexture("scene_1");
+    Texture* tex2 = AssetManager::getInstance().getTexture("scene_2");
+    Texture* tex3 = AssetManager::getInstance().getTexture("scene_3");
+    Texture* tex4 = AssetManager::getInstance().getTexture("scene_4");
+    Texture* tex5 = AssetManager::getInstance().getTexture("scene_5");
     Texture* xtex = AssetManager::getInstance().getTexture("xbutton");
 	
     unsigned int tex1Id = tex1->getRendererID();
     unsigned int tex2Id = tex2->getRendererID();
     unsigned int tex3Id = tex3->getRendererID();
     unsigned int tex4Id = tex4->getRendererID();
+    unsigned int tex5Id = tex5->getRendererID();
     unsigned int xtexId = xtex->getRendererID();
 	
     ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -176,6 +181,11 @@ void renderUI()
         sceneManager.switchToScene(3);
     }
     ImGui::SameLine(0, 32);
+    if (ImGui::ImageButton((void*)(intptr_t)tex5Id, ImVec2(128, 128), buttonUv0, buttonUv1, -1, buttonBgColor, scene5->getSceneState() == SceneState::Enabled ? buttonSceneEnabledTint : buttonSceneDisabledTint))
+    {
+        sceneManager.switchToScene(4);
+    }
+    ImGui::SameLine(0, 32);
     if (ImGui::Button("View All", ImVec2(128, 128)))
     {
         sceneManager.loadAllScenesAsync(true);
@@ -186,6 +196,7 @@ void renderUI()
     float progress2 = scene2->getPercentLoaded();
     float progress3 = scene3->getPercentLoaded();
     float progress4 = scene4->getPercentLoaded();
+    float progress5 = scene5->getPercentLoaded();
     const ImVec2 progressBarSize = ImVec2(136, 16);
     const ImVec2 xButtonSize = ImVec2(128, 16);
 
@@ -257,6 +268,24 @@ void renderUI()
         if (ImGui::ImageButton((void*)(intptr_t)xtexId, xButtonSize, buttonUv0, buttonUv1))
         {
             SceneManager::getInstance().unloadSceneAsync(3);
+        }
+        ImGui::PopID();
+    }
+    ImGui::SameLine(0, 32);
+    if (scene5->getSceneState() == SceneState::Unloaded)
+    {
+        ImGui::Dummy(progressBarSize);
+    }
+    else if (scene5->getSceneState() == SceneState::Loading)
+    {
+        ImGui::ProgressBar(progress5, progressBarSize);
+    }
+    else if (scene5->getSceneState() == SceneState::Disabled || scene5->getSceneState() == SceneState::Enabled)
+    {
+        ImGui::PushID("UnloadButton5");
+        if (ImGui::ImageButton((void*)(intptr_t)xtexId, xButtonSize, buttonUv0, buttonUv1))
+        {
+            SceneManager::getInstance().unloadSceneAsync(4);
         }
         ImGui::PopID();
     }

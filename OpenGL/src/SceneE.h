@@ -1,8 +1,8 @@
 #pragma once
 #include "Scene.h"
 
-class SceneA : public Scene
+class SceneE : public Scene
 {
 public:
-	SceneA();
+	SceneE();
 };

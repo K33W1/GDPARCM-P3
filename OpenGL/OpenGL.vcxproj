@@ -29,6 +29,7 @@
     <ClCompile Include="src\SceneB.cpp" />
     <ClCompile Include="src\SceneC.cpp" />
     <ClCompile Include="src\SceneD.cpp" />
+    <ClCompile Include="src\SceneE.cpp" />
     <ClCompile Include="src\SceneLoadingThread.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\SceneA.cpp" />
@@ -73,6 +74,7 @@
     <ClInclude Include="src\SceneB.h" />
     <ClInclude Include="src\SceneC.h" />
     <ClInclude Include="src\SceneD.h" />
+    <ClInclude Include="src\SceneE.h" />
     <ClInclude Include="src\SceneLoadingThread.h" />
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\SceneA.h" />

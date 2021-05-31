@@ -8,12 +8,15 @@
 #include <iostream>
 #include <algorithm>
 
+#include "SceneE.h"
+
 void SceneManager::initialize()
 {
 	allScenes.push_back(new SceneA());
 	allScenes.push_back(new SceneB());
 	allScenes.push_back(new SceneC());
 	allScenes.push_back(new SceneD());
+	allScenes.push_back(new SceneE());
 }
 
 void SceneManager::loadScene(int index, bool loadAsEnabled)
