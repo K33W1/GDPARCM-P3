@@ -4,10 +4,9 @@
 #include "SceneC.h"
 #include "SceneD.h"
 #include "SceneLoadingThread.h"
+#include "SceneUnloadingThread.h"
 #include <iostream>
 #include <algorithm>
-
-#include "SceneUnloadingThread.h"
 
 void SceneManager::initialize()
 {
@@ -184,6 +183,36 @@ void SceneManager::deleteSceneLoadingThread(SceneLoadingThread* thread)
 void SceneManager::deleteSceneUnloadingThread(SceneUnloadingThread* thread)
 {
 	sceneUnloadingThreads.remove(thread);
+}
+
+float SceneManager::getMainProgressBarPercent()
+{
+	if (sceneLoadingThreads.size() == 0)
+	{
+		sceneLoadingCount = 0;
+		return -1.0f;
+	}
+
+	int sceneCount = 0;
+	float percentTotal = 0.0f;
+
+	sceneLoadingThreads.manualSharedLock();
+	for (SceneLoadingThread* sceneLoadingThread : sceneLoadingThreads)
+	{
+		if (sceneLoadingThread->getIsEnabledOnLoad())
+		{
+			sceneCount++;
+			percentTotal += allScenes[sceneLoadingThread->getSceneIndex()]->getPercentLoaded();
+		}
+	}
+	sceneLoadingThreads.manualSharedUnlock();
+
+	if (sceneCount > sceneLoadingCount)
+		sceneLoadingCount = sceneCount;
+
+	percentTotal += sceneLoadingCount - sceneCount;
+	
+	return sceneLoadingCount > 0 ? percentTotal / (float)sceneLoadingCount : -1.0f;
 }
 
 void SceneManager::enableScene(Scene* scene)

@@ -16,4 +16,5 @@ private:
 	std::thread thread;
 	int sceneIndex;
 	bool isEnabledOnLoad;
+	bool isLoadingAssetsDone;
 };

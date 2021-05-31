@@ -31,6 +31,8 @@ public:
 	void deleteSceneLoadingThread(SceneLoadingThread* thread);
 	void deleteSceneUnloadingThread(SceneUnloadingThread* thread);
 
+	float getMainProgressBarPercent();
+
 private:
 	SceneManager() = default;
 	~SceneManager() override = default;
@@ -45,4 +47,5 @@ private:
 	std::vector<Scene*> enabledScenes;
 	std::vector<Scene*> disabledScenes;
 	std::vector<Scene*> allScenes;
+	int sceneLoadingCount;
 };

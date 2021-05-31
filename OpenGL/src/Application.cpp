@@ -263,10 +263,9 @@ void renderUI()
     
     ImGui::End();
 
-    if (sceneManager.getMainLoadingScene() != nullptr && sceneManager.getMainLoadingScene()->getSceneState() == SceneState::Loading)
+    float mainScenePercentLoaded = sceneManager.getMainProgressBarPercent();
+    if (mainScenePercentLoaded >= 0.0f)
     {
-        float mainScenePercentLoaded = sceneManager.getMainLoadingScene()->getPercentLoaded();
-
         ImVec2 glfwWindowSize(glfwWindowSizeX / 2, glfwWindowSizeY / 2);
         ImVec2 loadingBarSize(256.0f, 16.0f);
         ImVec2 loadingBarHalfSize(loadingBarSize.x / 2, loadingBarSize.y / 2);
