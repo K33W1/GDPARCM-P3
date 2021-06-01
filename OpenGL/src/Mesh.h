@@ -7,6 +7,7 @@ class Mesh
 {
 public:
 	Mesh(const VertexArray* const va, const IndexBuffer* const ib);
+	~Mesh();
 
 	const VertexArray* const getVertexArray() const;
 	const IndexBuffer* const getIndexBuffer() const;
