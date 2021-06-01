@@ -307,6 +307,12 @@ void renderUI()
         ImGui::ProgressBar(mainScenePercentLoaded, loadingBarSize);
         ImGui::End();
     }
+
+    ImGui::SetNextWindowSize(ImVec2(128.0f, 64.0f));
+    ImGui::SetNextWindowPos(ImVec2(glfwWindowSizeX - 128.0f, glfwWindowSizeY - 64.0f));
+    ImGui::Begin("FPS");
+	ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
+    ImGui::End();
 }
 
 void processInput(GLFWwindow* window)
